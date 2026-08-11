@@ -226,23 +226,19 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.e("ValenceDebug", "onCreateOptionsMenu() - START");
         try {
             getMenuInflater().inflate(R.menu.activity_main_toolbar_menu, menu);
-
-            // Add module toolbar extensions
-            if (moduleManager != null) {
-                Log.e("ValenceDebug", "Adding module extensions...");
-                for (UmlModule.ToolbarExtension extension : moduleManager.getToolbarExtensions()) {
-                    extension.addMenuItems(menu);
-                }
-                Log.e("ValenceDebug", "Module extensions added");
+            
+            // Ensure GEDCOM item is visible
+            MenuItem gedcomItem = menu.findItem(R.id.toolbar_menu_import_gedcom);
+            if (gedcomItem != null) {
+                gedcomItem.setVisible(true);
+                Log.e("ValenceDebug", "GEDCOM menu item found and set visible");
             } else {
-                Log.e("ValenceDebug", "moduleManager is null, skipping extensions");
+                Log.e("ValenceDebug", "GEDCOM menu item not found in XML");
             }
-
+            
             MenuCompat.setGroupDividerEnabled(menu, true);
-            Log.e("ValenceDebug", "onCreateOptionsMenu() - COMPLETED");
             return super.onCreateOptionsMenu(menu);
         } catch (Exception e) {
             Log.e("ValenceDebug", "onCreateOptionsMenu() - FAILED", e);
