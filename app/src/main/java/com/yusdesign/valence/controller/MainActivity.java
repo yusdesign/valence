@@ -854,13 +854,13 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
-
-        // Handle GEDCOM import from module
-        if ("Import GEDCOM File".equals(menuItem.getTitle())) {
+    
+        // Handle GEDCOM import by ID
+        if (itemId == R.id.toolbar_menu_import_gedcom) {
             importGedcomFile();
             return true;
         }
-
+    
         // Existing menu items
         if (itemId == R.id.toolbar_menu_export) {
             if (sWriteExternalStoragePermission) menuItemExport();
@@ -879,7 +879,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         }
         return true;
     }
-
     // ====== Menu Item Called Methods ======
 
     private void menuItemExport() {
