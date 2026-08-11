@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.controller;
+package com.yusdesign.valence.controller;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
