@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.model;
+package com.yusdesign.valence.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
