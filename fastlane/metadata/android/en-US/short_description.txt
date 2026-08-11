@@ -1,1 +1,1 @@
-Design your app using UML
+Valence app is using UML
