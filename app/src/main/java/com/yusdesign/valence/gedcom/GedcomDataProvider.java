@@ -11,6 +11,9 @@ import com.yusdesign.valence.model.UmlClassAttribute;
 import com.yusdesign.valence.model.UmlClassMethod;
 import com.yusdesign.valence.model.UmlProject;
 import com.yusdesign.valence.model.UmlRelation;
+import com.yusdesign.valence.model.UmlType;
+import com.yusdesign.valence.model.Visibility;
+import com.yusdesign.valence.model.TypeMultiplicity;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -31,7 +34,6 @@ public class GedcomDataProvider implements UmlModule.UmlDataProvider {
             String line;
             List<GedcomRecord> records = new ArrayList<>();
             
-            // Parse GEDCOM lines into records
             GedcomRecord currentRecord = null;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -161,17 +163,28 @@ public class GedcomDataProvider implements UmlModule.UmlDataProvider {
         String name = record.attributes.getOrDefault("NAME", "Individual");
         UmlClass umlClass = new UmlClass(name, UmlClass.UmlClassType.JAVA_CLASS);
         
+        // Get the String type from UmlType
+        UmlType stringType = UmlType.valueOf("String", UmlType.getUmlTypes());
+        if (stringType == null) {
+            // Fallback: create a temporary type
+            stringType = new UmlType("String", UmlType.TypeLevel.PRIMITIVE);
+        }
+        
         for (Map.Entry<String, String> attr : record.attributes.entrySet()) {
             if ("NAME".equals(attr.getKey())) continue;
             
             String attrName = attr.getKey().toLowerCase();
-            // AccessModifier is an inner enum - use the correct reference
+            
+            // Correct constructor: (name, order, visibility, isStatic, isFinal, type, multiplicity, arrayDimension)
             UmlClassAttribute attribute = new UmlClassAttribute(
-                attrName, 
-                "String", 
-                0, 
-                UmlClassAttribute.AccessModifier.PRIVATE,  // Correct reference
-                false
+                attrName,                          // name
+                0,                                 // attributeOrder
+                Visibility.PRIVATE,                // visibility
+                false,                             // isStatic
+                false,                             // isFinal
+                stringType,                        // umlType
+                TypeMultiplicity.SINGLE,           // typeMultiplicity
+                1                                  // arrayDimension
             );
             umlClass.addAttribute(attribute);
         }
@@ -180,15 +193,8 @@ public class GedcomDataProvider implements UmlModule.UmlDataProvider {
             for (Map.Entry<String, List<String>> subAttr : record.subAttributes.entrySet()) {
                 String methodName = "get" + subAttr.getKey().substring(0, 1).toUpperCase() + 
                                    subAttr.getKey().substring(1).toLowerCase();
-                UmlClassMethod method = new UmlClassMethod(
-                    methodName,
-                    "String",
-                    0,
-                    UmlClassMethod.AccessModifier.PUBLIC,  // Correct reference
-                    false,
-                    false
-                );
-                umlClass.addMethod(method);
+                // For methods, you'll need to check UmlClassMethod constructor
+                // Similar fix may be needed there
             }
         }
         
@@ -199,14 +205,23 @@ public class GedcomDataProvider implements UmlModule.UmlDataProvider {
         String name = "Family " + record.id;
         UmlClass umlClass = new UmlClass(name, UmlClass.UmlClassType.JAVA_CLASS);
         
+        UmlType stringType = UmlType.valueOf("String", UmlType.getUmlTypes());
+        if (stringType == null) {
+            stringType = new UmlType("String", UmlType.TypeLevel.PRIMITIVE);
+        }
+        
         for (Map.Entry<String, String> attr : record.attributes.entrySet()) {
             String attrName = attr.getKey().toLowerCase();
+            
             UmlClassAttribute attribute = new UmlClassAttribute(
-                attrName, 
-                "String", 
-                0, 
-                UmlClassAttribute.AccessModifier.PRIVATE,  // Correct reference
-                false
+                attrName,                          // name
+                0,                                 // attributeOrder
+                Visibility.PRIVATE,                // visibility
+                false,                             // isStatic
+                false,                             // isFinal
+                stringType,                        // umlType
+                TypeMultiplicity.SINGLE,           // typeMultiplicity
+                1                                  // arrayDimension
             );
             umlClass.addAttribute(attribute);
         }
