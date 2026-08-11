@@ -349,11 +349,12 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "STEP 2: EventListener set SUCCESSFULLY");
 
             // STEP 3: REGISTRATION IS DISABLED FOR TESTING
-            // Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
-            // Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
-
+            Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
+            Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
+            
             // Uncomment this when ready to test GEDCOM:
             // STEP 3: Create GEDCOM Module Instance
+            /*
             Log.e("ValenceDebug", "STEP 3: Creating GedcomModule instance...");
             GedcomModule gedcomModule = new GedcomModule();
             Log.e("ValenceDebug", "STEP 3: GedcomModule instance created");
@@ -367,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "STEP 5: Enabling GedcomModule...");
             moduleManager.enableModule(GEDCOM_MODULE_ID);
             Log.e("ValenceDebug", "STEP 5: GedcomModule enabled");
+            */
             
             Log.e("ValenceDebug", "=========================================");
             Log.e("ValenceDebug", "initModuleSystem() - COMPLETED SUCCESSFULLY!");
