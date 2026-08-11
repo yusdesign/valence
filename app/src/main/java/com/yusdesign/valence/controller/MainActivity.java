@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         GraphView.GraphViewObserver,
         NavigationView.OnNavigationItemSelectedListener {
 
+    // ====== STATIC INITIALIZER ======
+    static {
+        Log.e("ValenceDebug", "=========================================");
+        Log.e("ValenceDebug", "MainActivity STATIC INITIALIZER");
+        Log.e("ValenceDebug", "=========================================");
+    }
+
     // ====== Core App Fields ======
     private UmlProject mProject;
     private boolean mExpectingTouchLocation = false;
@@ -104,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private static final int INTENT_OPEN_DOCUMENT_IMPORT_PROJECT = 2000;
     private static final int INTENT_CREATE_DOCUMENT_EXPORT_CUSTOM_TYPES = 3000;
     private static final int INTENT_OPEN_DOCUMENT_IMPORT_CUSTOM_TYPES = 4000;
-    private static final int INTENT_IMPORT_GEDCOM = 5000; // NEW
+    private static final int INTENT_IMPORT_GEDCOM = 5000;
     private static final int REQUEST_PERMISSION = 6000;
 
     // ====== Module System Fields ======
@@ -115,74 +122,182 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private FrameLayout mMainActivityFrame;
     private GraphView mGraphView;
 
+    // ====== CONSTRUCTOR ======
+    public MainActivity() {
+        Log.e("ValenceDebug", "MainActivity CONSTRUCTOR called");
+    }
+
     // ====== Lifecycle Methods ======
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        Log.e("ValenceDebug", "=========================================");
+        Log.e("ValenceDebug", "onCreate() - START");
+        Log.e("ValenceDebug", "=========================================");
 
-        // Instantiate views
-        mMainActivityFrame = findViewById(R.id.activity_main_frame);
+        try {
+            // ====== STEP 1: Set up global crash handler ======
+            Log.e("ValenceDebug", "STEP 1: Setting up crash handler...");
+            Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+                Log.e("ValenceCrash", "!!! UNCAUGHT EXCEPTION !!!", throwable);
+                try {
+                    Toast.makeText(MainActivity.this,
+                            "CRASH: " + throwable.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                } catch (Exception ignored) {
+                    // Can't show toast
+                }
+            });
+            Log.e("ValenceDebug", "STEP 1: Crash handler set");
 
-        UmlType.clearUmlTypes();
-        UmlType.initializePrimitiveUmlTypes(this);
-        UmlType.initializeCustomUmlTypes(this);
-        getPreferences();
+            // ====== STEP 2: Super and setContentView ======
+            Log.e("ValenceDebug", "STEP 2: Calling super.onCreate()...");
+            super.onCreate(savedInstanceState);
+            Log.e("ValenceDebug", "STEP 2: super.onCreate() done");
 
-        configureToolbar();
-        configureDrawerLayout();
-        configureNavigationView();
-        configureAndDisplayGraphFragment(R.id.activity_main_frame);
+            Log.e("ValenceDebug", "STEP 2: Calling setContentView()...");
+            setContentView(R.layout.activity_main);
+            Log.e("ValenceDebug", "STEP 2: setContentView() done");
 
-        // Initialize module system
-        initModuleSystem();
+            // ====== STEP 3: Find views ======
+            Log.e("ValenceDebug", "STEP 3: Finding views...");
+            mMainActivityFrame = findViewById(R.id.activity_main_frame);
+            Log.e("ValenceDebug", "STEP 3: mMainActivityFrame = " + (mMainActivityFrame != null));
+            Log.e("ValenceDebug", "STEP 3: Views found");
 
-        createOnBackPressedCallback();
-        setOnBackPressedCallback();
+            // ====== STEP 4: Initialize UmlType ======
+            Log.e("ValenceDebug", "STEP 4: Initializing UmlType...");
+            UmlType.clearUmlTypes();
+            Log.e("ValenceDebug", "STEP 4: UmlTypes cleared");
+            UmlType.initializePrimitiveUmlTypes(this);
+            Log.e("ValenceDebug", "STEP 4: Primitive UmlTypes initialized");
+            UmlType.initializeCustomUmlTypes(this);
+            Log.e("ValenceDebug", "STEP 4: Custom UmlTypes initialized");
+
+            // ====== STEP 5: Get preferences ======
+            Log.e("ValenceDebug", "STEP 5: Getting preferences...");
+            getPreferences();
+            Log.e("ValenceDebug", "STEP 5: Preferences loaded");
+
+            // ====== STEP 6: Configure UI components ======
+            Log.e("ValenceDebug", "STEP 6: Configuring UI components...");
+            configureToolbar();
+            Log.e("ValenceDebug", "STEP 6: Toolbar configured");
+            configureDrawerLayout();
+            Log.e("ValenceDebug", "STEP 6: Drawer configured");
+            configureNavigationView();
+            Log.e("ValenceDebug", "STEP 6: Navigation configured");
+
+            // ====== STEP 7: Configure graph fragment ======
+            Log.e("ValenceDebug", "STEP 7: Configuring graph fragment...");
+            configureAndDisplayGraphFragment(R.id.activity_main_frame);
+            Log.e("ValenceDebug", "STEP 7: Graph fragment configured");
+
+            // ====== STEP 8: Initialize module system ======
+            Log.e("ValenceDebug", "STEP 8: Initializing module system...");
+            initModuleSystem();
+            Log.e("ValenceDebug", "STEP 8: Module system initialized");
+
+            // ====== STEP 9: Set up back callback ======
+            Log.e("ValenceDebug", "STEP 9: Setting up back callback...");
+            createOnBackPressedCallback();
+            setOnBackPressedCallback();
+            Log.e("ValenceDebug", "STEP 9: Back callback set");
+
+            // ====== STEP 10: Request permissions ======
+            Log.e("ValenceDebug", "STEP 10: Requesting permissions...");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                checkPermissions();
+            }
+            Log.e("ValenceDebug", "STEP 10: Permissions requested");
+
+            Log.e("ValenceDebug", "=========================================");
+            Log.e("ValenceDebug", "onCreate() - COMPLETED SUCCESSFULLY!");
+            Log.e("ValenceDebug", "=========================================");
+
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "=========================================");
+            Log.e("ValenceDebug", "onCreate() - FAILED!");
+            Log.e("ValenceDebug", "=========================================");
+            Log.e("ValenceDebug", "Exception: " + e.getMessage(), e);
+            Toast.makeText(this, "CRASH: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main_toolbar_menu, menu);
+        Log.e("ValenceDebug", "onCreateOptionsMenu() - START");
+        try {
+            getMenuInflater().inflate(R.menu.activity_main_toolbar_menu, menu);
 
-        // Add module toolbar extensions
-        if (moduleManager != null) {
-            for (UmlModule.ToolbarExtension extension : moduleManager.getToolbarExtensions()) {
-                extension.addMenuItems(menu);
+            // Add module toolbar extensions
+            if (moduleManager != null) {
+                Log.e("ValenceDebug", "Adding module extensions...");
+                for (UmlModule.ToolbarExtension extension : moduleManager.getToolbarExtensions()) {
+                    extension.addMenuItems(menu);
+                }
+                Log.e("ValenceDebug", "Module extensions added");
+            } else {
+                Log.e("ValenceDebug", "moduleManager is null, skipping extensions");
             }
-        }
 
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        return super.onCreateOptionsMenu(menu);
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            Log.e("ValenceDebug", "onCreateOptionsMenu() - COMPLETED");
+            return super.onCreateOptionsMenu(menu);
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "onCreateOptionsMenu() - FAILED", e);
+            return super.onCreateOptionsMenu(menu);
+        }
     }
 
     @Override
     protected void onStart() {
-        super.onStart();
+        Log.e("ValenceDebug", "onStart() - START");
+        try {
+            super.onStart();
 
-        mGraphView = findViewById(R.id.graphview);
-        mGraphView.setUmlProject(mProject);
-        Log.i("TEST", "onStart");
+            mGraphView = findViewById(R.id.graphview);
+            Log.e("ValenceDebug", "mGraphView = " + (mGraphView != null));
+            if (mGraphView != null) {
+                mGraphView.setUmlProject(mProject);
+                Log.e("ValenceDebug", "mGraphView.setUmlProject() called");
+            }
+            Log.i("TEST", "onStart");
+            Log.e("ValenceDebug", "onStart() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "onStart() - FAILED", e);
+        }
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        Log.e("ValenceDebug", "onDestroy() - START");
+        try {
+            super.onDestroy();
 
-        mProject.save(getApplicationContext());
-        Log.i("TEST", "save : project");
-        savePreferences();
-        Log.i("TEST", "save : preferences");
-        UmlType.saveCustomUmlTypes(this);
-        Log.i("TEST", "save : custom types");
+            mProject.save(getApplicationContext());
+            Log.i("TEST", "save : project");
+            savePreferences();
+            Log.i("TEST", "save : preferences");
+            UmlType.saveCustomUmlTypes(this);
+            Log.i("TEST", "save : custom types");
+            Log.e("ValenceDebug", "onDestroy() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "onDestroy() - FAILED", e);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onResume() {
-        super.onResume();
-        checkPermissions();
+        Log.e("ValenceDebug", "onResume() - START");
+        try {
+            super.onResume();
+            checkPermissions();
+            Log.e("ValenceDebug", "onResume() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "onResume() - FAILED", e);
+        }
     }
 
     // ====== Module System Initialization ======
@@ -191,198 +306,163 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
      * Initializes the module system and registers the GEDCOM module.
      * This is the entry point for all Valence extensions.
      */
-    /**
-    * Initializes the module system and registers the GEDCOM module.
-    * This is the entry point for all Valence extensions.
-    * 
-    * THIS METHOD IS HEAVILY LOGGED FOR DEBUGGING PURPOSES.
-    * Each step logs its progress to help identify where crashes occur.
-    */
     private void initModuleSystem() {
-    // ========================================================================
-    // STEP 1: Method entry
-    // ========================================================================
-    Log.e("ValenceDebug", "=========================================");
-    Log.e("ValenceDebug", "initModuleSystem: METHOD STARTED");
-    Log.e("ValenceDebug", "=========================================");
-    
-    try {
-    // ========================================================================
-    // STEP 2: Create ModuleManager
-    // ========================================================================
-    Log.e("ValenceDebug", "STEP 2: Creating ModuleManager...");
-    try {
-        moduleManager = new ModuleManager(this);
-        Log.e("ValenceDebug", "STEP 2: ModuleManager created SUCCESSFULLY");
-    } catch (Exception e) {
-        Log.e("ValenceDebug", "STEP 2: ModuleManager creation FAILED", e);
-        throw e; // Re-throw to be caught by outer try-catch
-    }
-    
-    // ========================================================================
-    // STEP 3: Set Event Listener
-    // ========================================================================
-    Log.e("ValenceDebug", "STEP 3: Setting EventListener...");
-    try {
-        moduleManager.setEventListener(new ModuleManager.ModuleEventListener() {
-            @Override
-            public void onModuleActivated(UmlModule module) {
-                Log.e("ValenceDebug", "EVENT: Module ACTIVATED: " + module.getDisplayName());
-                Toast.makeText(MainActivity.this,
-                        "Module activated: " + module.getDisplayName(),
-                        Toast.LENGTH_SHORT).show();
-            }
-            
-            @Override
-            public void onModuleDeactivated(UmlModule module) {
-                Log.e("ValenceDebug", "EVENT: Module DEACTIVATED: " + module.getDisplayName());
-            }
-            
-            @Override
-            public void onModuleUpgraded(UmlModule oldModule, UmlModule newModule) {
-                Log.e("ValenceDebug", "EVENT: Module UPGRADED: " + oldModule.getModuleId() +
-                        " from " + oldModule.getVersion() + " to " + newModule.getVersion());
-                Toast.makeText(MainActivity.this,
-                        "Module upgraded: " + oldModule.getModuleId() + " to v" + newModule.getVersion(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-        Log.e("ValenceDebug", "STEP 3: EventListener set SUCCESSFULLY");
-    } catch (Exception e) {
-        Log.e("ValenceDebug", "STEP 3: EventListener setting FAILED", e);
-        throw e;
-    }
-    
-    // ========================================================================
-    // STEP 4: Create GEDCOM Module Instance
-    // ========================================================================
-    Log.e("ValenceDebug", "STEP 4: Creating GedcomModule instance...");
-    GedcomModule gedcomModule = null;
-    try {
-        gedcomModule = new GedcomModule();
-        Log.e("ValenceDebug", "STEP 4: GedcomModule instance created SUCCESSFULLY");
-    } catch (Exception e) {
-        Log.e("ValenceDebug", "STEP 4: GedcomModule creation FAILED", e);
-        throw e;
-    }
-    
-    // ========================================================================
-    // STEP 5: Register GEDCOM Module
-    // ========================================================================
-    Log.e("ValenceDebug", "STEP 5: Registering GedcomModule with ModuleManager...");
-    try {
-        if (gedcomModule != null) {
+        Log.e("ValenceDebug", "=========================================");
+        Log.e("ValenceDebug", "initModuleSystem() - START");
+        Log.e("ValenceDebug", "=========================================");
+
+        try {
+            // STEP 1: Create ModuleManager
+            Log.e("ValenceDebug", "STEP 1: Creating ModuleManager...");
+            moduleManager = new ModuleManager(this);
+            Log.e("ValenceDebug", "STEP 1: ModuleManager created SUCCESSFULLY");
+
+            // STEP 2: Set Event Listener
+            Log.e("ValenceDebug", "STEP 2: Setting EventListener...");
+            moduleManager.setEventListener(new ModuleManager.ModuleEventListener() {
+                @Override
+                public void onModuleActivated(UmlModule module) {
+                    Log.e("ValenceDebug", "EVENT: Module ACTIVATED: " + module.getDisplayName());
+                    Toast.makeText(MainActivity.this,
+                            "Module activated: " + module.getDisplayName(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onModuleDeactivated(UmlModule module) {
+                    Log.e("ValenceDebug", "EVENT: Module DEACTIVATED: " + module.getDisplayName());
+                }
+
+                @Override
+                public void onModuleUpgraded(UmlModule oldModule, UmlModule newModule) {
+                    Log.e("ValenceDebug", "EVENT: Module UPGRADED: " + oldModule.getModuleId());
+                }
+            });
+            Log.e("ValenceDebug", "STEP 2: EventListener set SUCCESSFULLY");
+
+            // STEP 3: REGISTRATION IS DISABLED FOR TESTING
+            Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
+            Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
+
+            // Uncomment this when ready to test GEDCOM:
+            /*
+            // STEP 3: Create GEDCOM Module Instance
+            Log.e("ValenceDebug", "STEP 3: Creating GedcomModule instance...");
+            GedcomModule gedcomModule = new GedcomModule();
+            Log.e("ValenceDebug", "STEP 3: GedcomModule instance created");
+
+            // STEP 4: Register GEDCOM Module
+            Log.e("ValenceDebug", "STEP 4: Registering GedcomModule...");
             moduleManager.registerModule(gedcomModule);
-            Log.e("ValenceDebug", "STEP 5: GedcomModule registered SUCCESSFULLY");
-        } else {
-            Log.e("ValenceDebug", "STEP 5: ERROR - gedcomModule is NULL, cannot register");
-            throw new NullPointerException("gedcomModule is null");
+            Log.e("ValenceDebug", "STEP 4: GedcomModule registered");
+
+            // STEP 5: Enable GEDCOM Module
+            Log.e("ValenceDebug", "STEP 5: Enabling GedcomModule...");
+            moduleManager.enableModule(GEDCOM_MODULE_ID);
+            Log.e("ValenceDebug", "STEP 5: GedcomModule enabled");
+            */
+
+            Log.e("ValenceDebug", "=========================================");
+            Log.e("ValenceDebug", "initModuleSystem() - COMPLETED SUCCESSFULLY!");
+            Log.e("ValenceDebug", "=========================================");
+
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "=========================================");
+            Log.e("ValenceDebug", "initModuleSystem() - FAILED!");
+            Log.e("ValenceDebug", "=========================================");
+            Log.e("ValenceDebug", "Exception: " + e.getMessage(), e);
+            Toast.makeText(this, "Module init failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-    } catch (Exception e) {
-        Log.e("ValenceDebug", "STEP 5: GedcomModule registration FAILED", e);
-        throw e;
-    }
-    
-    // ========================================================================
-    // STEP 6: Enable GEDCOM Module
-    // ========================================================================
-    Log.e("ValenceDebug", "STEP 6: Enabling GedcomModule (ID: " + GedcomModule.MODULE_ID + ")...");
-    try {
-        moduleManager.enableModule(GedcomModule.MODULE_ID);
-        Log.e("ValenceDebug", "STEP 6: GedcomModule enabled SUCCESSFULLY");
-    } catch (Exception e) {
-        Log.e("ValenceDebug", "STEP 6: GedcomModule enable FAILED", e);
-        throw e;
-    }
-    
-    // ========================================================================
-    // STEP 7: Verify Module is Active
-    // ========================================================================
-    Log.e("ValenceDebug", "STEP 7: Verifying module is active...");
-    try {
-        List<UmlModule> activeModules = moduleManager.getActiveModules();
-        Log.e("ValenceDebug", "STEP 7: Active modules count: " + activeModules.size());
-        for (UmlModule module : activeModules) {
-            Log.e("ValenceDebug", "STEP 7: Active module: " + module.getModuleId() + 
-                    " (" + module.getDisplayName() + ")");
-        }
-        Log.e("ValenceDebug", "STEP 7: Verification COMPLETE");
-    } catch (Exception e) {
-        Log.e("ValenceDebug", "STEP 7: Verification FAILED", e);
-        throw e;
-    }
-    
-    // ========================================================================
-    // STEP 8: SUCCESS - All done
-    // ========================================================================
-    Log.e("ValenceDebug", "=========================================");
-    Log.e("ValenceDebug", "initModuleSystem: COMPLETED SUCCESSFULLY!");
-    Log.e("ValenceDebug", "=========================================");
-    
-    } catch (Exception e) {
-    // ========================================================================
-    // CATCH ALL - Log the complete failure
-    // ========================================================================
-    Log.e("ValenceDebug", "=========================================");
-    Log.e("ValenceDebug", "initModuleSystem: FAILED!");
-    Log.e("ValenceDebug", "=========================================");
-    Log.e("ValenceDebug", "EXCEPTION: " + e.getMessage(), e);
-    Log.e("ValenceDebug", "EXCEPTION STACK TRACE:");
-    for (StackTraceElement element : e.getStackTrace()) {
-        Log.e("ValenceDebug", "  at " + element.toString());
-    }
-    Log.e("ValenceDebug", "=========================================");
-    
-    // Show a Toast to the user
-    Toast.makeText(this, 
-            "Module system init failed: " + e.getMessage(), 
-            Toast.LENGTH_LONG).show();
-    }
     }
 
     // ====== Configuration Methods ======
 
     private void configureToolbar() {
-        mToolbar = findViewById(R.id.main_activity_toolbar);
-        setSupportActionBar(mToolbar);
+        Log.e("ValenceDebug", "configureToolbar() - START");
+        try {
+            mToolbar = findViewById(R.id.main_activity_toolbar);
+            Log.e("ValenceDebug", "mToolbar = " + (mToolbar != null));
+            setSupportActionBar(mToolbar);
+            Log.e("ValenceDebug", "configureToolbar() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureToolbar() - FAILED", e);
+            throw e;
+        }
     }
 
     private void configureDrawerLayout() {
-        mDrawerLayout = findViewById(R.id.activity_main_drawer);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, mToolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        mDrawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        Log.e("ValenceDebug", "configureDrawerLayout() - START");
+        try {
+            mDrawerLayout = findViewById(R.id.activity_main_drawer);
+            Log.e("ValenceDebug", "mDrawerLayout = " + (mDrawerLayout != null));
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, mDrawerLayout, mToolbar,
+                    R.string.navigation_drawer_open,
+                    R.string.navigation_drawer_close);
+            mDrawerLayout.addDrawerListener(toggle);
+            toggle.syncState();
+            Log.e("ValenceDebug", "configureDrawerLayout() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureDrawerLayout() - FAILED", e);
+            throw e;
+        }
     }
 
     private void configureNavigationView() {
-        mNavigationView = findViewById(R.id.activity_main_navigation_view);
-        mMenuHeaderProjectNameText = mNavigationView.getHeaderView(0)
-                .findViewById(R.id.activity_main_navigation_view_header_project_name_text);
-        updateNavigationView();
-        mNavigationView.setNavigationItemSelectedListener(this);
+        Log.e("ValenceDebug", "configureNavigationView() - START");
+        try {
+            mNavigationView = findViewById(R.id.activity_main_navigation_view);
+            Log.e("ValenceDebug", "mNavigationView = " + (mNavigationView != null));
+            mMenuHeaderProjectNameText = mNavigationView.getHeaderView(0)
+                    .findViewById(R.id.activity_main_navigation_view_header_project_name_text);
+            Log.e("ValenceDebug", "mMenuHeaderProjectNameText = " + (mMenuHeaderProjectNameText != null));
+            updateNavigationView();
+            mNavigationView.setNavigationItemSelectedListener(this);
+            Log.e("ValenceDebug", "configureNavigationView() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureNavigationView() - FAILED", e);
+            throw e;
+        }
     }
 
     private void updateNavigationView() {
-        mMenuHeaderProjectNameText.setText(mProject.getName());
+        try {
+            if (mMenuHeaderProjectNameText != null && mProject != null) {
+                mMenuHeaderProjectNameText.setText(mProject.getName());
+            }
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "updateNavigationView() - FAILED", e);
+        }
     }
 
     private void savePreferences() {
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(SHARED_PREFERENCES_PROJECT_NAME, mProject.getName());
-        editor.apply();
+        try {
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(SHARED_PREFERENCES_PROJECT_NAME, mProject.getName());
+            editor.apply();
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "savePreferences() - FAILED", e);
+        }
     }
 
     private void getPreferences() {
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        String projectName = preferences.getString(SHARED_PREFERENCES_PROJECT_NAME, null);
-        Log.i("TEST", "Loaded preferences");
-        if (projectName != null) {
-            mProject = UmlProject.load(getApplicationContext(), projectName);
-        } else {
+        Log.e("ValenceDebug", "getPreferences() - START");
+        try {
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            String projectName = preferences.getString(SHARED_PREFERENCES_PROJECT_NAME, null);
+            Log.i("TEST", "Loaded preferences");
+            if (projectName != null) {
+                mProject = UmlProject.load(getApplicationContext(), projectName);
+                Log.e("ValenceDebug", "Project loaded: " + projectName);
+            } else {
+                mProject = new UmlProject("NewProject", getApplicationContext());
+                Log.e("ValenceDebug", "New project created");
+            }
+            Log.e("ValenceDebug", "getPreferences() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "getPreferences() - FAILED", e);
+            // Create a default project if loading fails
             mProject = new UmlProject("NewProject", getApplicationContext());
         }
     }
@@ -390,16 +470,28 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     // ====== Back Press Handling ======
 
     private void createOnBackPressedCallback() {
-        mOnBackPressedCallback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                onBackButtonPressed();
-            }
-        };
+        Log.e("ValenceDebug", "createOnBackPressedCallback() - START");
+        try {
+            mOnBackPressedCallback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    onBackButtonPressed();
+                }
+            };
+            Log.e("ValenceDebug", "createOnBackPressedCallback() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "createOnBackPressedCallback() - FAILED", e);
+        }
     }
 
     private void setOnBackPressedCallback() {
-        this.getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
+        Log.e("ValenceDebug", "setOnBackPressedCallback() - START");
+        try {
+            this.getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
+            Log.e("ValenceDebug", "setOnBackPressedCallback() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "setOnBackPressedCallback() - FAILED", e);
+        }
     }
 
     private void onBackButtonPressed() {
@@ -414,80 +506,109 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     // ====== Fragment Management ======
 
     private void configureAndDisplayGraphFragment(int viewContainerId) {
-        mGraphFragment = GraphFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(viewContainerId, mGraphFragment, GRAPH_FRAGMENT_TAG)
-                .commitNow();
+        Log.e("ValenceDebug", "configureAndDisplayGraphFragment() - START");
+        try {
+            mGraphFragment = GraphFragment.newInstance();
+            Log.e("ValenceDebug", "GraphFragment created");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(viewContainerId, mGraphFragment, GRAPH_FRAGMENT_TAG)
+                    .commitNow();
+            Log.e("ValenceDebug", "GraphFragment transaction committed");
+            Log.e("ValenceDebug", "configureAndDisplayGraphFragment() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureAndDisplayGraphFragment() - FAILED", e);
+            throw e;
+        }
     }
 
     private void configureAndDisplayClassEditorFragment(int viewContainerId, float xLocation,
                                                         float yLocation, int classOrder) {
-        if (mClassEditorFragment == null) {
-            mClassEditorFragment = ClassEditorFragment.newInstance(xLocation, yLocation, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mGraphFragment)
-                    .add(viewContainerId, mClassEditorFragment, CLASS_EDITOR_FRAGMENT_TAG)
-                    .commitNow();
-        } else {
-            mClassEditorFragment.updateClassEditorFragment(xLocation, yLocation, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mGraphFragment)
-                    .show(mClassEditorFragment)
-                    .commitNow();
+        Log.e("ValenceDebug", "configureAndDisplayClassEditorFragment() - START");
+        try {
+            if (mClassEditorFragment == null) {
+                mClassEditorFragment = ClassEditorFragment.newInstance(xLocation, yLocation, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mGraphFragment)
+                        .add(viewContainerId, mClassEditorFragment, CLASS_EDITOR_FRAGMENT_TAG)
+                        .commitNow();
+                Log.e("ValenceDebug", "New ClassEditorFragment created");
+            } else {
+                mClassEditorFragment.updateClassEditorFragment(xLocation, yLocation, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mGraphFragment)
+                        .show(mClassEditorFragment)
+                        .commitNow();
+                Log.e("ValenceDebug", "ClassEditorFragment updated");
+            }
+            Log.e("ValenceDebug", "configureAndDisplayClassEditorFragment() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureAndDisplayClassEditorFragment() - FAILED", e);
         }
     }
 
     private void configureAndDisplayAttributeEditorFragment(int viewContainerId, int attributeOrder,
                                                             int classOrder) {
-        if (mAttributeEditorFragment == null) {
-            mAttributeEditorFragment = AttributeEditorFragment.newInstance(
-                    mClassEditorFragment.getTag(), attributeOrder, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mClassEditorFragment)
-                    .add(viewContainerId, mAttributeEditorFragment, ATTRIBUTE_EDITOR_FRAGMENT_TAG)
-                    .commitNow();
-        } else {
-            mAttributeEditorFragment.updateAttributeEditorFragment(attributeOrder, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mClassEditorFragment)
-                    .show(mAttributeEditorFragment)
-                    .commitNow();
+        try {
+            if (mAttributeEditorFragment == null) {
+                mAttributeEditorFragment = AttributeEditorFragment.newInstance(
+                        mClassEditorFragment.getTag(), attributeOrder, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mClassEditorFragment)
+                        .add(viewContainerId, mAttributeEditorFragment, ATTRIBUTE_EDITOR_FRAGMENT_TAG)
+                        .commitNow();
+            } else {
+                mAttributeEditorFragment.updateAttributeEditorFragment(attributeOrder, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mClassEditorFragment)
+                        .show(mAttributeEditorFragment)
+                        .commitNow();
+            }
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureAndDisplayAttributeEditorFragment() - FAILED", e);
         }
     }
 
     private void configureAndDisplayMethodEditorFragment(int viewContainerId, int methodOrder,
                                                          int classOrder) {
-        if (mMethodEditorFragment == null) {
-            mMethodEditorFragment = MethodEditorFragment.newInstance(
-                    mClassEditorFragment.getTag(), methodOrder, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mClassEditorFragment)
-                    .add(viewContainerId, mMethodEditorFragment, METHOD_EDITOR_FRAGMENT_TAG)
-                    .commitNow();
-        } else {
-            mMethodEditorFragment.updateMethodEditorFragment(methodOrder, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mClassEditorFragment)
-                    .show(mMethodEditorFragment)
-                    .commitNow();
+        try {
+            if (mMethodEditorFragment == null) {
+                mMethodEditorFragment = MethodEditorFragment.newInstance(
+                        mClassEditorFragment.getTag(), methodOrder, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mClassEditorFragment)
+                        .add(viewContainerId, mMethodEditorFragment, METHOD_EDITOR_FRAGMENT_TAG)
+                        .commitNow();
+            } else {
+                mMethodEditorFragment.updateMethodEditorFragment(methodOrder, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mClassEditorFragment)
+                        .show(mMethodEditorFragment)
+                        .commitNow();
+            }
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureAndDisplayMethodEditorFragment() - FAILED", e);
         }
     }
 
     private void configureAndDisplayParameterEditorFragment(int viewContainerId, int parameterOrder,
                                                             int methodOrder, int classOrder) {
-        if (mParameterEditorFragment == null) {
-            mParameterEditorFragment = ParameterEditorFragment.newInstance(
-                    mMethodEditorFragment.getTag(), parameterOrder, methodOrder, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mMethodEditorFragment)
-                    .add(viewContainerId, mParameterEditorFragment, PARAMETER_EDITOR_FRAGMENT_TAG)
-                    .commitNow();
-        } else {
-            mParameterEditorFragment.updateParameterEditorFragment(parameterOrder, methodOrder, classOrder);
-            getSupportFragmentManager().beginTransaction()
-                    .hide(mMethodEditorFragment)
-                    .show(mParameterEditorFragment)
-                    .commitNow();
+        try {
+            if (mParameterEditorFragment == null) {
+                mParameterEditorFragment = ParameterEditorFragment.newInstance(
+                        mMethodEditorFragment.getTag(), parameterOrder, methodOrder, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mMethodEditorFragment)
+                        .add(viewContainerId, mParameterEditorFragment, PARAMETER_EDITOR_FRAGMENT_TAG)
+                        .commitNow();
+            } else {
+                mParameterEditorFragment.updateParameterEditorFragment(parameterOrder, methodOrder, classOrder);
+                getSupportFragmentManager().beginTransaction()
+                        .hide(mMethodEditorFragment)
+                        .show(mParameterEditorFragment)
+                        .commitNow();
+            }
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "configureAndDisplayParameterEditorFragment() - FAILED", e);
         }
     }
 
@@ -506,38 +627,54 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
 
     @Override
     public void closeClassEditorFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .hide(fragment)
-                .show(mGraphFragment)
-                .commitNow();
-        mGraphView.invalidate();
+        try {
+            getSupportFragmentManager().beginTransaction()
+                    .hide(fragment)
+                    .show(mGraphFragment)
+                    .commitNow();
+            if (mGraphView != null) mGraphView.invalidate();
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "closeClassEditorFragment() - FAILED", e);
+        }
     }
 
     @Override
     public void closeAttributeEditorFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .hide(fragment)
-                .show(mClassEditorFragment)
-                .commit();
-        mClassEditorFragment.updateLists();
+        try {
+            getSupportFragmentManager().beginTransaction()
+                    .hide(fragment)
+                    .show(mClassEditorFragment)
+                    .commit();
+            if (mClassEditorFragment != null) mClassEditorFragment.updateLists();
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "closeAttributeEditorFragment() - FAILED", e);
+        }
     }
 
     @Override
     public void closeMethodEditorFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .hide(fragment)
-                .show(mClassEditorFragment)
-                .commitNow();
-        mClassEditorFragment.updateLists();
+        try {
+            getSupportFragmentManager().beginTransaction()
+                    .hide(fragment)
+                    .show(mClassEditorFragment)
+                    .commitNow();
+            if (mClassEditorFragment != null) mClassEditorFragment.updateLists();
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "closeMethodEditorFragment() - FAILED", e);
+        }
     }
 
     @Override
     public void closeParameterEditorFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .hide(fragment)
-                .show(mMethodEditorFragment)
-                .commitNow();
-        mMethodEditorFragment.updateLists();
+        try {
+            getSupportFragmentManager().beginTransaction()
+                    .hide(fragment)
+                    .show(mMethodEditorFragment)
+                    .commitNow();
+            if (mMethodEditorFragment != null) mMethodEditorFragment.updateLists();
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "closeParameterEditorFragment() - FAILED", e);
+        }
     }
 
     @Override
@@ -615,17 +752,8 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         builder.setTitle("Save as")
                 .setMessage("Enter new name :")
                 .setView(editText)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        saveAs(editText.getText().toString());
-                    }
-                })
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+                .setPositiveButton("OK", (dialogInterface, i) -> saveAs(editText.getText().toString()))
                 .create()
                 .show();
     }
@@ -634,7 +762,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         mProject.save(this);
         UmlType.clearProjectUmlTypes();
         mProject = new UmlProject("NewProject", this);
-        mGraphView.setUmlProject(mProject);
+        if (mGraphView != null) mGraphView.setUmlProject(mProject);
         updateNavigationView();
     }
 
@@ -648,21 +776,14 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         builder.setTitle("Load project")
                 .setMessage("Choose project to load :")
                 .setView(spinner)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String fileName = spinner.getSelectedItem().toString();
-                        if (fileName != null) {
-                            UmlType.clearProjectUmlTypes();
-                            mProject = UmlProject.load(getApplicationContext(), fileName);
-                            mGraphView.setUmlProject(mProject);
-                            updateNavigationView();
-                        }
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    String fileName = spinner.getSelectedItem().toString();
+                    if (fileName != null) {
+                        UmlType.clearProjectUmlTypes();
+                        mProject = UmlProject.load(getApplicationContext(), fileName);
+                        if (mGraphView != null) mGraphView.setUmlProject(mProject);
+                        updateNavigationView();
                     }
                 })
                 .create()
@@ -679,35 +800,19 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         builder.setTitle("Delete project")
                 .setMessage("Choose project to delete :")
                 .setView(spinner)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String fileName = spinner.getSelectedItem().toString();
-                        if (fileName != null) {
-                            File pathName = new File(getFilesDir(), UmlProject.PROJECT_DIRECTORY);
-                            final File file = new File(pathName, fileName);
-                            AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                            alert.setTitle("Delete Project")
-                                    .setMessage("Are you sure you want to delete " + fileName + " ?")
-                                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                        }
-                                    })
-                                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            file.delete();
-                                        }
-                                    })
-                                    .create()
-                                    .show();
-                        }
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    String fileName = spinner.getSelectedItem().toString();
+                    if (fileName != null) {
+                        File pathName = new File(getFilesDir(), UmlProject.PROJECT_DIRECTORY);
+                        final File file = new File(pathName, fileName);
+                        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                        alert.setTitle("Delete Project")
+                                .setMessage("Are you sure you want to delete " + fileName + " ?")
+                                .setNegativeButton("NO", (dialog, which) -> {})
+                                .setPositiveButton("YES", (dialog, which) -> file.delete())
+                                .create()
+                                .show();
                     }
                 })
                 .create()
@@ -723,20 +828,13 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         builder.setTitle("Merge project")
                 .setMessage("Choose project to merge")
                 .setView(spinner)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String fileName = spinner.getSelectedItem().toString();
-                        if (fileName != null) {
-                            UmlProject project = UmlProject.load(getApplicationContext(), fileName);
-                            mProject.mergeWith(project);
-                            mGraphView.invalidate();
-                        }
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    String fileName = spinner.getSelectedItem().toString();
+                    if (fileName != null) {
+                        UmlProject project = UmlProject.load(getApplicationContext(), fileName);
+                        mProject.mergeWith(project);
+                        if (mGraphView != null) mGraphView.invalidate();
                     }
                 })
                 .create()
@@ -803,23 +901,16 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         adb.setTitle("Create custom type")
                 .setMessage("Enter custom type name :")
                 .setView(editText)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String typeName = editText.getText().toString();
-                        if (typeName.equals("")) {
-                            Toast.makeText(context, "Failed : name cannot be blank", Toast.LENGTH_SHORT).show();
-                        } else if (UmlType.containsUmlTypeNamed(typeName)) {
-                            Toast.makeText(context, "Failed : this name is already used", Toast.LENGTH_SHORT).show();
-                        } else {
-                            UmlType.createUmlType(typeName, UmlType.TypeLevel.CUSTOM);
-                            Toast.makeText(context, "Custom type created", Toast.LENGTH_SHORT).show();
-                        }
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    String typeName = editText.getText().toString();
+                    if (typeName.equals("")) {
+                        Toast.makeText(context, "Failed : name cannot be blank", Toast.LENGTH_SHORT).show();
+                    } else if (UmlType.containsUmlTypeNamed(typeName)) {
+                        Toast.makeText(context, "Failed : this name is already used", Toast.LENGTH_SHORT).show();
+                    } else {
+                        UmlType.createUmlType(typeName, UmlType.TypeLevel.CUSTOM);
+                        Toast.makeText(context, "Custom type created", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .create()
@@ -842,26 +933,19 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         adb.setTitle("Delete custom types")
                 .setMessage("Check custom types to delete")
                 .setView(listView)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SparseBooleanArray checkMapping = listView.getCheckedItemPositions();
-                        UmlType t;
-                        for (int j = 0; j < checkMapping.size(); j++) {
-                            if (checkMapping.valueAt(j)) {
-                                t = UmlType.valueOf(listView.getItemAtPosition(checkMapping.keyAt(j)).toString(),
-                                        UmlType.getUmlTypes());
-                                UmlType.removeUmlType(t);
-                                mProject.removeParametersOfType(t);
-                                mProject.removeMethodsOfType(t);
-                                mProject.removeAttributesOfType(t);
-                                mGraphView.invalidate();
-                            }
+                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    SparseBooleanArray checkMapping = listView.getCheckedItemPositions();
+                    UmlType t;
+                    for (int j = 0; j < checkMapping.size(); j++) {
+                        if (checkMapping.valueAt(j)) {
+                            t = UmlType.valueOf(listView.getItemAtPosition(checkMapping.keyAt(j)).toString(),
+                                    UmlType.getUmlTypes());
+                            UmlType.removeUmlType(t);
+                            mProject.removeParametersOfType(t);
+                            mProject.removeMethodsOfType(t);
+                            mProject.removeAttributesOfType(t);
+                            if (mGraphView != null) mGraphView.invalidate();
                         }
                     }
                 })
@@ -885,21 +969,13 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Help")
                 .setMessage(Html.fromHtml(IOUtils.readRawHtmlFile(this, R.raw.help_html)))
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
+                .setPositiveButton("OK", (dialog, which) -> {})
                 .create()
                 .show();
     }
 
     // ====== GEDCOM Import ======
 
-    /**
-     * Launches a file picker for GEDCOM files (.ged).
-     * This is the entry point for the GEDCOM module functionality.
-     */
     private void importGedcomFile() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("*/*");
@@ -907,10 +983,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         startActivityForResult(intent, INTENT_IMPORT_GEDCOM);
     }
 
-    /**
-     * Processes a loaded GEDCOM file using the module system.
-     * @param fileUri The URI of the selected GEDCOM file
-     */
     private void processGedcomFile(Uri fileUri) {
         if (moduleManager == null) {
             Toast.makeText(this, "Module system not initialized", Toast.LENGTH_SHORT).show();
@@ -927,7 +999,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             UmlProject project = provider.loadData(this, fileUri);
             if (project != null) {
                 mProject = project;
-                mGraphView.setUmlProject(mProject);
+                if (mGraphView != null) mGraphView.setUmlProject(mProject);
                 updateNavigationView();
                 Toast.makeText(this,
                         "GEDCOM imported successfully!\n" +
@@ -966,7 +1038,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Uri fileNameUri = data.getData();
             UmlType.clearProjectUmlTypes();
             mProject = UmlProject.importProject(this, fileNameUri);
-            mGraphView.setUmlProject(mProject);
+            if (mGraphView != null) mGraphView.setUmlProject(mProject);
         } else if (requestCode == INTENT_CREATE_DOCUMENT_EXPORT_CUSTOM_TYPES && resultCode == RESULT_OK) {
             Uri fileNameUri = data.getData();
             UmlType.exportCustomUmlTypes(this, fileNameUri);
@@ -982,10 +1054,10 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSION) {
-            sWriteExternalStoragePermission = grantResults[WRITE_EXTERNAL_STORAGE_INDEX] ==
-                    PackageManager.PERMISSION_GRANTED;
-            sReadExternalStoragePermission = grantResults[READ_EXTERNAL_STORAGE_INDEX] ==
-                    PackageManager.PERMISSION_GRANTED;
+            sWriteExternalStoragePermission = grantResults.length > WRITE_EXTERNAL_STORAGE_INDEX &&
+                    grantResults[WRITE_EXTERNAL_STORAGE_INDEX] == PackageManager.PERMISSION_GRANTED;
+            sReadExternalStoragePermission = grantResults.length > READ_EXTERNAL_STORAGE_INDEX &&
+                    grantResults[READ_EXTERNAL_STORAGE_INDEX] == PackageManager.PERMISSION_GRANTED;
         }
     }
 
@@ -1001,18 +1073,27 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            String[] permissionString = {
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            };
+        Log.e("ValenceDebug", "checkPermissions() - START");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                String[] permissionString = {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                };
 
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                    PackageManager.PERMISSION_GRANTED ||
-                    checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(permissionString, REQUEST_PERMISSION);
+                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED ||
+                        checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                                PackageManager.PERMISSION_GRANTED) {
+                    Log.e("ValenceDebug", "Requesting permissions...");
+                    requestPermissions(permissionString, REQUEST_PERMISSION);
+                } else {
+                    Log.e("ValenceDebug", "Permissions already granted");
+                }
             }
+            Log.e("ValenceDebug", "checkPermissions() - COMPLETED");
+        } catch (Exception e) {
+            Log.e("ValenceDebug", "checkPermissions() - FAILED", e);
         }
     }
 }
