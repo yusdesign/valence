@@ -30,29 +30,30 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     
-    // Explicitly add Kotlin to force consistent version
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+    // Pure Java AndroidX libraries (explicitly excluding Kotlin)
+    implementation('androidx.appcompat:appcompat:1.6.1') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    implementation('androidx.constraintlayout:constraintlayout:2.1.4') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    implementation('com.google.android.material:material:1.9.0') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    implementation('androidx.drawerlayout:drawerlayout:1.2.0') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    implementation('androidx.legacy:legacy-support-v4:1.0.0') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
     
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
-    implementation 'androidx.navigation:navigation-fragment:2.7.5'
-    implementation 'androidx.navigation:navigation-ui:2.7.5'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    
+    // Pure Java test libraries
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-// Force consistent Kotlin versions across all modules
+// Globally exclude Kotlin from ALL dependencies
 configurations.all {
-    resolutionStrategy {
-        force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
-        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-    }
+    exclude group: 'org.jetbrains.kotlin'
 }
