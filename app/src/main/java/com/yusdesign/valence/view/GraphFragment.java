@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.view;
+package com.yusdesign.valence.view;
 
 import android.os.Bundle;
 
@@ -13,10 +13,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.nathaniel.motus.umlclasseditor.R;
-import com.nathaniel.motus.umlclasseditor.controller.FragmentObserver;
-import com.nathaniel.motus.umlclasseditor.model.UmlClass;
-import com.nathaniel.motus.umlclasseditor.model.UmlRelation;
+import com.yusdesign.valence.R;
+import com.yusdesign.valence.controller.FragmentObserver;
+import com.yusdesign.valence.model.UmlClass;
+import com.yusdesign.valence.model.UmlRelation;
 
 public class GraphFragment extends Fragment implements View.OnClickListener {
 
