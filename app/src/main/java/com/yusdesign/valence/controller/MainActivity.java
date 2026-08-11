@@ -191,41 +191,153 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
      * Initializes the module system and registers the GEDCOM module.
      * This is the entry point for all Valence extensions.
      */
+    /**
+    * Initializes the module system and registers the GEDCOM module.
+    * This is the entry point for all Valence extensions.
+    * 
+    * THIS METHOD IS HEAVILY LOGGED FOR DEBUGGING PURPOSES.
+    * Each step logs its progress to help identify where crashes occur.
+    */
     private void initModuleSystem() {
+    // ========================================================================
+    // STEP 1: Method entry
+    // ========================================================================
+    Log.e("ValenceDebug", "=========================================");
+    Log.e("ValenceDebug", "initModuleSystem: METHOD STARTED");
+    Log.e("ValenceDebug", "=========================================");
+    
+    try {
+    // ========================================================================
+    // STEP 2: Create ModuleManager
+    // ========================================================================
+    Log.e("ValenceDebug", "STEP 2: Creating ModuleManager...");
+    try {
         moduleManager = new ModuleManager(this);
+        Log.e("ValenceDebug", "STEP 2: ModuleManager created SUCCESSFULLY");
+    } catch (Exception e) {
+        Log.e("ValenceDebug", "STEP 2: ModuleManager creation FAILED", e);
+        throw e; // Re-throw to be caught by outer try-catch
+    }
+    
+    // ========================================================================
+    // STEP 3: Set Event Listener
+    // ========================================================================
+    Log.e("ValenceDebug", "STEP 3: Setting EventListener...");
+    try {
         moduleManager.setEventListener(new ModuleManager.ModuleEventListener() {
             @Override
             public void onModuleActivated(UmlModule module) {
-                Log.i("ModuleSystem", "Activated: " + module.getDisplayName());
+                Log.e("ValenceDebug", "EVENT: Module ACTIVATED: " + module.getDisplayName());
                 Toast.makeText(MainActivity.this,
                         "Module activated: " + module.getDisplayName(),
                         Toast.LENGTH_SHORT).show();
             }
-
+            
             @Override
             public void onModuleDeactivated(UmlModule module) {
-                Log.i("ModuleSystem", "Deactivated: " + module.getDisplayName());
+                Log.e("ValenceDebug", "EVENT: Module DEACTIVATED: " + module.getDisplayName());
             }
-
+            
             @Override
             public void onModuleUpgraded(UmlModule oldModule, UmlModule newModule) {
-                Log.i("ModuleSystem", "Upgraded: " + oldModule.getModuleId() +
+                Log.e("ValenceDebug", "EVENT: Module UPGRADED: " + oldModule.getModuleId() +
                         " from " + oldModule.getVersion() + " to " + newModule.getVersion());
                 Toast.makeText(MainActivity.this,
                         "Module upgraded: " + oldModule.getModuleId() + " to v" + newModule.getVersion(),
                         Toast.LENGTH_SHORT).show();
             }
         });
-
-        // Register and enable the GEDCOM module
-        try {
-            moduleManager.registerModule(new GedcomModule());
-            moduleManager.enableModule(GEDCOM_MODULE_ID);
-            Log.i("ModuleSystem", "GEDCOM module registered and enabled");
-        } catch (Exception e) {
-            Log.e("ModuleSystem", "Failed to register GEDCOM module", e);
-            Toast.makeText(this, "Failed to load GEDCOM module", Toast.LENGTH_SHORT).show();
+        Log.e("ValenceDebug", "STEP 3: EventListener set SUCCESSFULLY");
+    } catch (Exception e) {
+        Log.e("ValenceDebug", "STEP 3: EventListener setting FAILED", e);
+        throw e;
+    }
+    
+    // ========================================================================
+    // STEP 4: Create GEDCOM Module Instance
+    // ========================================================================
+    Log.e("ValenceDebug", "STEP 4: Creating GedcomModule instance...");
+    GedcomModule gedcomModule = null;
+    try {
+        gedcomModule = new GedcomModule();
+        Log.e("ValenceDebug", "STEP 4: GedcomModule instance created SUCCESSFULLY");
+    } catch (Exception e) {
+        Log.e("ValenceDebug", "STEP 4: GedcomModule creation FAILED", e);
+        throw e;
+    }
+    
+    // ========================================================================
+    // STEP 5: Register GEDCOM Module
+    // ========================================================================
+    Log.e("ValenceDebug", "STEP 5: Registering GedcomModule with ModuleManager...");
+    try {
+        if (gedcomModule != null) {
+            moduleManager.registerModule(gedcomModule);
+            Log.e("ValenceDebug", "STEP 5: GedcomModule registered SUCCESSFULLY");
+        } else {
+            Log.e("ValenceDebug", "STEP 5: ERROR - gedcomModule is NULL, cannot register");
+            throw new NullPointerException("gedcomModule is null");
         }
+    } catch (Exception e) {
+        Log.e("ValenceDebug", "STEP 5: GedcomModule registration FAILED", e);
+        throw e;
+    }
+    
+    // ========================================================================
+    // STEP 6: Enable GEDCOM Module
+    // ========================================================================
+    Log.e("ValenceDebug", "STEP 6: Enabling GedcomModule (ID: " + GedcomModule.MODULE_ID + ")...");
+    try {
+        moduleManager.enableModule(GedcomModule.MODULE_ID);
+        Log.e("ValenceDebug", "STEP 6: GedcomModule enabled SUCCESSFULLY");
+    } catch (Exception e) {
+        Log.e("ValenceDebug", "STEP 6: GedcomModule enable FAILED", e);
+        throw e;
+    }
+    
+    // ========================================================================
+    // STEP 7: Verify Module is Active
+    // ========================================================================
+    Log.e("ValenceDebug", "STEP 7: Verifying module is active...");
+    try {
+        List<UmlModule> activeModules = moduleManager.getActiveModules();
+        Log.e("ValenceDebug", "STEP 7: Active modules count: " + activeModules.size());
+        for (UmlModule module : activeModules) {
+            Log.e("ValenceDebug", "STEP 7: Active module: " + module.getModuleId() + 
+                    " (" + module.getDisplayName() + ")");
+        }
+        Log.e("ValenceDebug", "STEP 7: Verification COMPLETE");
+    } catch (Exception e) {
+        Log.e("ValenceDebug", "STEP 7: Verification FAILED", e);
+        throw e;
+    }
+    
+    // ========================================================================
+    // STEP 8: SUCCESS - All done
+    // ========================================================================
+    Log.e("ValenceDebug", "=========================================");
+    Log.e("ValenceDebug", "initModuleSystem: COMPLETED SUCCESSFULLY!");
+    Log.e("ValenceDebug", "=========================================");
+    
+    } catch (Exception e) {
+    // ========================================================================
+    // CATCH ALL - Log the complete failure
+    // ========================================================================
+    Log.e("ValenceDebug", "=========================================");
+    Log.e("ValenceDebug", "initModuleSystem: FAILED!");
+    Log.e("ValenceDebug", "=========================================");
+    Log.e("ValenceDebug", "EXCEPTION: " + e.getMessage(), e);
+    Log.e("ValenceDebug", "EXCEPTION STACK TRACE:");
+    for (StackTraceElement element : e.getStackTrace()) {
+        Log.e("ValenceDebug", "  at " + element.toString());
+    }
+    Log.e("ValenceDebug", "=========================================");
+    
+    // Show a Toast to the user
+    Toast.makeText(this, 
+            "Module system init failed: " + e.getMessage(), 
+            Toast.LENGTH_LONG).show();
+    }
     }
 
     // ====== Configuration Methods ======
