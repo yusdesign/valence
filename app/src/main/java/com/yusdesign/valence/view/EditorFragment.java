@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.view;
+package com.yusdesign.valence.view;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.nathaniel.motus.umlclasseditor.controller.FragmentObserver;
+import com.yusdesign.valence.controller.FragmentObserver;
 
 public abstract class EditorFragment extends Fragment {
 
