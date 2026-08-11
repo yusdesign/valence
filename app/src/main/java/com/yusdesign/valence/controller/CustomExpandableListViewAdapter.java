@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.controller;
+package com.yusdesign.valence.controller;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.nathaniel.motus.umlclasseditor.R;
-import com.nathaniel.motus.umlclasseditor.model.AdapterItem;
+import com.yusdesign.valence.R;
+import com.yusdesign.valence.model.AdapterItem;
 
 import java.util.HashMap;
 import java.util.List;
