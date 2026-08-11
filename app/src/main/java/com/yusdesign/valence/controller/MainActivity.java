@@ -223,22 +223,34 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Toast.makeText(this, "CRASH: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.e("ValenceDebug", "onCreateOptionsMenu() - START");
         try {
             getMenuInflater().inflate(R.menu.activity_main_toolbar_menu, menu);
-            
-            // Ensure GEDCOM item is visible
-            MenuItem gedcomItem = menu.findItem(R.id.toolbar_menu_import_gedcom);
-            if (gedcomItem != null) {
-                gedcomItem.setVisible(true);
-                Log.e("ValenceDebug", "GEDCOM menu item found and set visible");
+            Log.e("ValenceDebug", "Base menu inflated");
+    
+            // Check if GEDCOM module is enabled
+            if (moduleManager != null) {
+                // Find the GEDCOM menu item from XML
+                MenuItem gedcomItem = menu.findItem(R.id.toolbar_menu_import_gedcom);
+                if (gedcomItem != null) {
+                    gedcomItem.setVisible(true);
+                    Log.e("ValenceDebug", "GEDCOM menu item found and set visible");
+                } else {
+                    Log.e("ValenceDebug", "GEDCOM menu item not found in XML - adding dynamically");
+                    // Fallback: add dynamically if not in XML
+                    gedcomItem = menu.add(Menu.NONE, R.id.toolbar_menu_import_gedcom, Menu.NONE, "Import GEDCOM");
+                    gedcomItem.setIcon(android.R.drawable.ic_menu_upload);
+                    gedcomItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                }
             } else {
-                Log.e("ValenceDebug", "GEDCOM menu item not found in XML");
+                Log.e("ValenceDebug", "moduleManager is null, GEDCOM not available");
             }
-            
+    
             MenuCompat.setGroupDividerEnabled(menu, true);
+            Log.e("ValenceDebug", "onCreateOptionsMenu() - COMPLETED");
             return super.onCreateOptionsMenu(menu);
         } catch (Exception e) {
             Log.e("ValenceDebug", "onCreateOptionsMenu() - FAILED", e);
@@ -337,11 +349,10 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "STEP 2: EventListener set SUCCESSFULLY");
 
             // STEP 3: REGISTRATION IS DISABLED FOR TESTING
-            Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
-            Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
+            // Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
+            // Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
 
             // Uncomment this when ready to test GEDCOM:
-            /*
             // STEP 3: Create GEDCOM Module Instance
             Log.e("ValenceDebug", "STEP 3: Creating GedcomModule instance...");
             GedcomModule gedcomModule = new GedcomModule();
@@ -356,8 +367,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "STEP 5: Enabling GedcomModule...");
             moduleManager.enableModule(GEDCOM_MODULE_ID);
             Log.e("ValenceDebug", "STEP 5: GedcomModule enabled");
-            */
-
+            
             Log.e("ValenceDebug", "=========================================");
             Log.e("ValenceDebug", "initModuleSystem() - COMPLETED SUCCESSFULLY!");
             Log.e("ValenceDebug", "=========================================");
