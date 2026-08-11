@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.view;
+package com.yusdesign.valence.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,13 +19,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nathaniel.motus.umlclasseditor.R;
-import com.nathaniel.motus.umlclasseditor.model.TypeMultiplicity;
-import com.nathaniel.motus.umlclasseditor.model.TypeNameComparator;
-import com.nathaniel.motus.umlclasseditor.model.UmlClass;
-import com.nathaniel.motus.umlclasseditor.model.UmlClassAttribute;
-import com.nathaniel.motus.umlclasseditor.model.UmlType;
-import com.nathaniel.motus.umlclasseditor.model.Visibility;
+import com.yusdesign.valence.R;
+import com.yusdesign.valence.model.TypeMultiplicity;
+import com.yusdesign.valence.model.TypeNameComparator;
+import com.yusdesign.valence.model.UmlClass;
+import com.yusdesign.valence.model.UmlClassAttribute;
+import com.yusdesign.valence.model.UmlType;
+import com.yusdesign.valence.model.Visibility;
 
 import java.util.ArrayList;
 import java.util.Collections;
