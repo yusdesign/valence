@@ -1,8 +1,8 @@
-package com.nathaniel.motus.umlclasseditor.controller;
+package com.yusdesign.valence.controller;
 
 import androidx.fragment.app.Fragment;
 
-import com.nathaniel.motus.umlclasseditor.model.UmlProject;
+import com.yusdesign.valence.model.UmlProject;
 
 //    **********************************************************************************************
 //    Callback interface
