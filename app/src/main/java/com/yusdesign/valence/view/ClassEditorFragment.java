@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.view;
+package com.yusdesign.valence.view;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -19,16 +19,16 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.nathaniel.motus.umlclasseditor.R;
-import com.nathaniel.motus.umlclasseditor.controller.CustomExpandableListViewAdapter;
-import com.nathaniel.motus.umlclasseditor.model.AdapterItem;
-import com.nathaniel.motus.umlclasseditor.model.AdapterItemComparator;
-import com.nathaniel.motus.umlclasseditor.model.AddItemString;
-import com.nathaniel.motus.umlclasseditor.model.UmlClass;
-import com.nathaniel.motus.umlclasseditor.model.UmlClassAttribute;
-import com.nathaniel.motus.umlclasseditor.model.UmlClassMethod;
-import com.nathaniel.motus.umlclasseditor.model.UmlEnumValue;
-import com.nathaniel.motus.umlclasseditor.model.UmlType;
+import com.yusdesign.valence.R;
+import com.yusdesign.valence.controller.CustomExpandableListViewAdapter;
+import com.yusdesign.valence.model.AdapterItem;
+import com.yusdesign.valence.model.AdapterItemComparator;
+import com.yusdesign.valence.model.AddItemString;
+import com.yusdesign.valence.model.UmlClass;
+import com.yusdesign.valence.model.UmlClassAttribute;
+import com.yusdesign.valence.model.UmlClassMethod;
+import com.yusdesign.valence.model.UmlEnumValue;
+import com.yusdesign.valence.model.UmlType;
 
 import java.util.ArrayList;
 import java.util.Collections;
