@@ -30,30 +30,18 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     
-    // Pure Java AndroidX libraries (explicitly excluding Kotlin)
-    implementation('androidx.appcompat:appcompat:1.6.1') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    implementation('androidx.constraintlayout:constraintlayout:2.1.4') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    implementation('com.google.android.material:material:1.9.0') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    implementation('androidx.drawerlayout:drawerlayout:1.2.0') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    implementation('androidx.legacy:legacy-support-v4:1.0.0') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
+    // Minimal pure Java dependencies
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
     
-    // Pure Java test libraries
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-// Globally exclude Kotlin from ALL dependencies
+// Remove ALL Kotlin
 configurations.all {
     exclude group: 'org.jetbrains.kotlin'
 }
