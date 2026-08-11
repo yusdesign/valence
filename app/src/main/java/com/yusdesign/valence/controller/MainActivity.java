@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.controller;
+package com.yusdesign.valence.controller;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -37,18 +37,18 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
-import com.nathaniel.motus.umlclasseditor.R;
-import com.nathaniel.motus.umlclasseditor.model.TypeNameComparator;
-import com.nathaniel.motus.umlclasseditor.model.UmlClass;
-import com.nathaniel.motus.umlclasseditor.model.UmlProject;
-import com.nathaniel.motus.umlclasseditor.model.UmlRelation;
-import com.nathaniel.motus.umlclasseditor.model.UmlType;
-import com.nathaniel.motus.umlclasseditor.view.AttributeEditorFragment;
-import com.nathaniel.motus.umlclasseditor.view.ClassEditorFragment;
-import com.nathaniel.motus.umlclasseditor.view.GraphFragment;
-import com.nathaniel.motus.umlclasseditor.view.GraphView;
-import com.nathaniel.motus.umlclasseditor.view.MethodEditorFragment;
-import com.nathaniel.motus.umlclasseditor.view.ParameterEditorFragment;
+import com.yusdesign.valence.R;
+import com.yusdesign.valence.model.TypeNameComparator;
+import com.yusdesign.valence.model.UmlClass;
+import com.yusdesign.valence.model.UmlProject;
+import com.yusdesign.valence.model.UmlRelation;
+import com.yusdesign.valence.model.UmlType;
+import com.yusdesign.valence.view.AttributeEditorFragment;
+import com.yusdesign.valence.view.ClassEditorFragment;
+import com.yusdesign.valence.view.GraphFragment;
+import com.yusdesign.valence.view.GraphView;
+import com.yusdesign.valence.view.MethodEditorFragment;
+import com.yusdesign.valence.view.ParameterEditorFragment;
 
 import java.io.File;
 import java.util.ArrayList;
