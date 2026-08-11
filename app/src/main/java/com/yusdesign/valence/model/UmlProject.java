@@ -1,10 +1,10 @@
-package com.nathaniel.motus.umlclasseditor.model;
+package com.yusdesign.valence.model;
 
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.nathaniel.motus.umlclasseditor.controller.IOUtils;
+import com.yusdesign.valence.controller.IOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
