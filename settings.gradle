@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "UML Class Editor"
+rootProject.name = "Valence"
