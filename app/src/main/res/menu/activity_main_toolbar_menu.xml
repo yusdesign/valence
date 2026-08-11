@@ -1,45 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <!-- Project Group -->
     <group
         android:id="@+id/project_group"
         android:checkableBehavior="none">
-    <item
-        android:id="@+id/toolbar_menu_export"
-        app:showAsAction="never"
-        android:title="Export project"/>
-    <item
-        android:id="@+id/toolbar_menu_import"
-        app:showAsAction="never"
-        android:title="Import project"/>
+        <item
+            android:id="@+id/toolbar_menu_export"
+            app:showAsAction="never"
+            android:title="Export project"
+            android:icon="@android:drawable/ic_menu_save" />
+        <item
+            android:id="@+id/toolbar_menu_import"
+            app:showAsAction="never"
+            android:title="Import project"
+            android:icon="@android:drawable/ic_menu_upload" />
+        
+        <!-- NEW: GEDCOM Import Item -->
+        <item
+            android:id="@+id/toolbar_menu_import_gedcom"
+            app:showAsAction="ifRoom"
+            android:title="Import GEDCOM"
+            android:icon="@android:drawable/ic_menu_upload" />
     </group>
+
+    <!-- Custom Types Group -->
     <group
         android:id="@+id/custom_type_group"
         android:checkableBehavior="none">
         <item
             android:id="@+id/toolbar_menu_create_custom_type"
             app:showAsAction="never"
-            android:title="Create custom type"/>
+            android:title="Create custom type" />
         <item
             android:id="@+id/toolbar_menu_delete_custom_types"
             app:showAsAction="never"
-            android:title="Delete custom types"/>
+            android:title="Delete custom types" />
         <item
             android:id="@+id/toolbar_menu_export_custom_types"
             app:showAsAction="never"
-            android:title="Export custom types"/>
+            android:title="Export custom types" />
         <item
             android:id="@+id/toolbar_menu_import_custom_types"
             app:showAsAction="never"
-            android:title="Import custom types"/>
+            android:title="Import custom types" />
     </group>
+
+    <!-- Help Group -->
     <group
         android:id="@+id/help_group"
         android:checkableBehavior="none">
         <item
             android:id="@+id/toolbar_menu_help"
             app:showAsAction="never"
-            android:title="Help"/>
+            android:title="Help"
+            android:icon="@android:drawable/ic_menu_help" />
     </group>
 
 </menu>
