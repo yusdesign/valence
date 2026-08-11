@@ -1,4 +1,4 @@
-package com.nathaniel.motus.umlclasseditor.view;
+package com.yusdesign.valence.view;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -17,13 +17,13 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.nathaniel.motus.umlclasseditor.R;
-import com.nathaniel.motus.umlclasseditor.model.UmlClass;
-import com.nathaniel.motus.umlclasseditor.model.UmlClassAttribute;
-import com.nathaniel.motus.umlclasseditor.model.UmlClassMethod;
-import com.nathaniel.motus.umlclasseditor.model.UmlEnumValue;
-import com.nathaniel.motus.umlclasseditor.model.UmlProject;
-import com.nathaniel.motus.umlclasseditor.model.UmlRelation;
+import com.yusdesign.valence.R;
+import com.yusdesign.valence.model.UmlClass;
+import com.yusdesign.valence.model.UmlClassAttribute;
+import com.yusdesign.valence.model.UmlClassMethod;
+import com.yusdesign.valence.model.UmlEnumValue;
+import com.yusdesign.valence.model.UmlProject;
+import com.yusdesign.valence.model.UmlRelation;
 
 public class GraphView extends View implements View.OnTouchListener{
 
