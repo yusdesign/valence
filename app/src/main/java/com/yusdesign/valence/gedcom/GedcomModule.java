@@ -1,15 +1,13 @@
 package com.yusdesign.valence.gedcom;
 
-import android.content.Context;
-import android.net.Uri;
 import android.view.Menu;
+import android.view.MenuItem;
+
 import com.yusdesign.valence.module.UmlModule;
-import com.yusdesign.valence.model.UmlProject;
+import com.yusdesign.valence.module.Version;
+
 import java.util.Set;
 
-/**
- * GEDCOM module for Valence. Supports both 5.5.1 and 7.0.0 formats.
- */
 public class GedcomModule implements UmlModule {
     public static final String MODULE_ID = "gedcom.parser";
     public static final Version VERSION = new Version(1, 0, 0);
@@ -37,7 +35,6 @@ public class GedcomModule implements UmlModule {
         this.engine = engine;
         this.dataProvider = new GedcomDataProvider();
         
-        // Register as file handler for .ged files
         engine.registerFileHandler(".ged", dataProvider);
         engine.registerImporter(dataProvider);
         engine.addToolbarExtension(this::addGedcomMenuItems);
@@ -55,7 +52,7 @@ public class GedcomModule implements UmlModule {
     
     private void addGedcomMenuItems(Menu menu) {
         MenuItem item = menu.add("Import GEDCOM File");
+        // MenuItem is now properly imported
         item.setIcon(android.R.drawable.ic_menu_upload);
-        // The click handling will be done in MainActivity
     }
 }
