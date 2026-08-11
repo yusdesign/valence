@@ -2,13 +2,12 @@ package com.yusdesign.valence.module;
 
 import android.content.Context;
 import android.net.Uri;
+import android.view.Menu;
+
 import com.yusdesign.valence.model.UmlProject;
+
 import java.util.Set;
 
-/**
- * Core interface for all Valence modules.
- * Implement this to add new functionality (GEDCOM parser, code generator, etc.)
- */
 public interface UmlModule {
     String getModuleId();
     String getDisplayName();
@@ -35,31 +34,7 @@ public interface UmlModule {
     }
     
     interface ToolbarExtension {
-        void addMenuItems(android.view.Menu menu);
-    }
-    
-    class Version implements Comparable<Version> {
-        private final int major, minor, patch;
-        
-        public Version(int major, int minor, int patch) {
-            this.major = major;
-            this.minor = minor;
-            this.patch = patch;
-        }
-        
-        public int getMajor() { return major; }
-        public int getMinor() { return minor; }
-        public int getPatch() { return patch; }
-        
-        @Override
-        public int compareTo(Version other) {
-            if (this.major != other.major) return this.major - other.major;
-            if (this.minor != other.minor) return this.minor - other.minor;
-            return this.patch - other.patch;
-        }
-        
-        @Override
-        public String toString() { return major + "." + minor + "." + patch; }
+        void addMenuItems(Menu menu);
     }
     
     enum Feature {
