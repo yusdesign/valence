@@ -30,7 +30,11 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     
-    // Pure Java dependencies - minimal and stable
+    // Add Kotlin runtime to resolve annotations
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0'
+    
+    // Your existing dependencies
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.9.0'
@@ -42,7 +46,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-// Complete Kotlin exclusion
 configurations.all {
-    exclude group: 'org.jetbrains.kotlin'
+    resolutionStrategy {
+        force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.0'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0'
+    }
 }
