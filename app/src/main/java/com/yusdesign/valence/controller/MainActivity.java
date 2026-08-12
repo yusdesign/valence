@@ -159,6 +159,23 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             setContentView(R.layout.activity_main);
             Log.e("ValenceDebug", "STEP 2: setContentView() done");
 
+            // List View Drawer
+            ListView drawerList = findViewById(R.id.drawer_list);
+            String[] menuItems = {"New Project", "Load Project", "Save As...", "Merge Project", "Delete Project"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
+            drawerList.setAdapter(adapter);
+            
+            drawerList.setOnItemClickListener((parent, view, position, id) -> {
+                switch (position) {
+                    case 0: drawerMenuNewProject(); break;
+                    case 1: drawerMenuLoadProject(); break;
+                    case 2: drawerMenuSaveAs(); break;
+                    case 3: drawerMenuMerge(); break;
+                    case 4: drawerMenuDeleteProject(); break;
+                }
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            });
+
             // ====== STEP 3: Find views ======
             Log.e("ValenceDebug", "STEP 3: Finding views...");
             mMainActivityFrame = findViewById(R.id.activity_main_frame);
