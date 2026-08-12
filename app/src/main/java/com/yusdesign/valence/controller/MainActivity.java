@@ -844,30 +844,51 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
-    
-        // Handle GEDCOM import by ID
+        
+        // Debounce - prevent rapid clicks
+        if (isClickTooFast()) {
+            return true;
+        }
+        
+        // ====== Project Group ======
+        if (itemId == R.id.toolbar_menu_export) {
+            if (sWriteExternalStoragePermission) menuItemExport();
+            return true;
+        }
+        if (itemId == R.id.toolbar_menu_import) {
+            if (sReadExternalStoragePermission) menuItemImport();
+            return true;
+        }
         if (itemId == R.id.toolbar_menu_import_gedcom) {
             importGedcomFile();
             return true;
         }
-    
-        // Existing menu items
-        if (itemId == R.id.toolbar_menu_export) {
-            if (sWriteExternalStoragePermission) menuItemExport();
-        } else if (itemId == R.id.toolbar_menu_import) {
-            if (sReadExternalStoragePermission) menuItemImport();
-        } else if (itemId == R.id.toolbar_menu_create_custom_type) {
+        
+        // ====== Custom Types Group ======
+        if (itemId == R.id.toolbar_menu_create_custom_type) {
             menuCreateCustomType();
-        } else if (itemId == R.id.toolbar_menu_delete_custom_types) {
-            menuDeleteCustomTypes();
-        } else if (itemId == R.id.toolbar_menu_export_custom_types) {
-            if (sWriteExternalStoragePermission) menuExportCustomTypes();
-        } else if (itemId == R.id.toolbar_menu_import_custom_types) {
-            if (sReadExternalStoragePermission) menuImportCustomTypes();
-        } else if (itemId == R.id.toolbar_menu_help) {
-            menuHelp();
+            return true;
         }
-        return true;
+        if (itemId == R.id.toolbar_menu_delete_custom_types) {
+            menuDeleteCustomTypes();
+            return true;
+        }
+        if (itemId == R.id.toolbar_menu_export_custom_types) {
+            if (sWriteExternalStoragePermission) menuExportCustomTypes();
+            return true;
+        }
+        if (itemId == R.id.toolbar_menu_import_custom_types) {
+            if (sReadExternalStoragePermission) menuImportCustomTypes();
+            return true;
+        }
+        
+        // ====== Help Group ======
+        if (itemId == R.id.toolbar_menu_help) {
+            menuHelp();
+            return true;
+        }
+        
+        return super.onOptionsItemSelected(menuItem);
     }
     // ====== Menu Item Called Methods ======
 
