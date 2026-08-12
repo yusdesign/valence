@@ -160,6 +160,14 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
                     } catch (Exception ignored) {}
                 });
             });
+			
+			// Force AppCompat to initialize early
+		    try {
+		        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+		        Log.e("ValenceDebug", "AppCompatDelegate initialized");
+		    } catch (Exception e) {
+		        Log.e("ValenceDebug", "AppCompatDelegate init failed", e);
+		    }
     
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
