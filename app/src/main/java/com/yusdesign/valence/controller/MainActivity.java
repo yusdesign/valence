@@ -36,7 +36,6 @@ import androidx.core.view.MenuCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-// import com.google.android.material.navigation.NavigationView;
 import com.yusdesign.valence.R;
 import com.yusdesign.valence.model.TypeNameComparator;
 import com.yusdesign.valence.model.UmlClass;
@@ -63,7 +62,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements FragmentObserver,
         GraphView.GraphViewObserver {
-        // "comma" NavigationView.OnNavigationItemSelectedListener {
 
     // ====== STATIC INITIALIZER ======
     static {
@@ -78,8 +76,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private Purpose mPurpose = FragmentObserver.Purpose.NONE;
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
-    // private NavigationView mNavigationView;
-    // private TextView mMenuHeaderProjectNameText;
 
     // ====== Permission Fields ======
     private static boolean sWriteExternalStoragePermission = true;
@@ -92,18 +88,18 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private static long DOUBLE_BACK_PRESSED_DELAY = 2000;
     private OnBackPressedCallback mOnBackPressedCallback;
 
-		// ====== Click Debouncing ======
-		private long mLastClickTime = 0;
+    // ====== Click Debouncing ======
+    private long mLastClickTime = 0;
 
-		private boolean isClickTooFast() {
-		    long now = System.currentTimeMillis();
-		    if (now - mLastClickTime < 500) {
-		        Log.e("ValenceUI", "Click too fast - ignoring");
-		        return true;
-		    }
-		    mLastClickTime = now;
-		    return false;
-		}
+    private boolean isClickTooFast() {
+        long now = System.currentTimeMillis();
+        if (now - mLastClickTime < 500) {
+            Log.e("ValenceUI", "Click too fast - ignoring");
+            return true;
+        }
+        mLastClickTime = now;
+        return false;
+    }
 
     // ====== Fragment Declarations ======
     private GraphFragment mGraphFragment;
@@ -147,49 +143,56 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         Log.e("ValenceDebug", "onCreate() - START");
     
         try {
-            // Set up crash handler
-						Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-						    Log.e("ValenceCrash", "!!! UNCAUGHT EXCEPTION !!!", throwable);
-						    runOnUiThread(() -> {
-						        Toast.makeText(this, 
-						            "Error: " + throwable.getMessage(), 
-						            Toast.LENGTH_LONG).show();
-						    });
-						});
+            // Set up crash handler, as early as possible
+            Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+                Log.e("ValenceCrash", "!!! UNCAUGHT EXCEPTION !!!", throwable);
+                // Show a Toast so you can see the error
+                runOnUiThread(() -> {
+                    try {
+                        Toast.makeText(MainActivity.this, 
+                            "Error: " + throwable.getMessage(), 
+                            Toast.LENGTH_LONG).show();
+                    } catch (Exception ignored) {}
+                });
+            });
     
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+
+            // Force the hamburger icon to show
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
     
             // ====== Set up the drawer ListView ======
             ListView drawerList = findViewById(R.id.drawer_list);
-						String[] menuItems = {
-						    "New Project", 
-						    "Load Project", 
-						    "Import GEDCOM",  // Position 2
-						    "Save As...", 
-						    "Merge Project", 
-						    "Delete Project"
-						};
+            String[] menuItems = {
+                "New Project", 
+                "Load Project", 
+                "Import GEDCOM",  // Position 2
+                "Save As...", 
+                "Merge Project", 
+                "Delete Project"
+            };
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
             drawerList.setAdapter(adapter);
     
             // In onCreate() - drawerList setup
-						drawerList.setOnItemClickListener((parent, view, position, id) -> {
-						    // Debounce
-						    if (isClickTooFast()) {
-						        return;
-						    }
-						    
-						    switch (position) {
-						        case 0: drawerMenuNewProject(); break;
-						        case 1: drawerMenuLoadProject(); break;
-						        case 2: importGedcomFile(); break;  // GEDCOM vv…
-						        case 3: drawerMenuSaveAs(); break;
-						        case 4: drawerMenuMerge(); break;
-						        case 5: drawerMenuDeleteProject(); break;
-						    }
-						    mDrawerLayout.closeDrawer(GravityCompat.START);
-						});
+            drawerList.setOnItemClickListener((parent, view, position, id) -> {
+                // Debounce
+                if (isClickTooFast()) {
+                    return;
+                }
+                
+                switch (position) {
+                    case 0: drawerMenuNewProject(); break;
+                    case 1: drawerMenuLoadProject(); break;
+                    case 2: importGedcomFile(); break;  // GEDCOM vv…
+                    case 3: drawerMenuSaveAs(); break;
+                    case 4: drawerMenuMerge(); break;
+                    case 5: drawerMenuDeleteProject(); break;
+                }
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            });
     
             // ====== Find views ======
             mMainActivityFrame = findViewById(R.id.activity_main_frame);
@@ -318,9 +321,9 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     // ====== Module System Initialization ======
 
     /**
-     * Initializes the module system and registers the GEDCOM module.
-     * This is the entry point for all Valence extensions.
-     */
+    * Initializes the module system and registers the GEDCOM module.
+    * This is the entry point for all Valence extensions.
+    */
     private void initModuleSystem() {
         Log.e("ValenceDebug", "=========================================");
         Log.e("ValenceDebug", "initModuleSystem() - START");
@@ -356,12 +359,11 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "STEP 2: EventListener set SUCCESSFULLY");
 
             // STEP 3: REGISTRATION IS DISABLED FOR TESTING
-            Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
-            Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
+            // Log.e("ValenceDebug", "STEP 3: GEDCOM module registration is DISABLED for debugging");
+            // Log.e("ValenceDebug", "STEP 3: If app starts, the issue is in the GEDCOM module");
             
             // Uncomment this when ready to test GEDCOM:
             // STEP 3: Create GEDCOM Module Instance
-            /*
             Log.e("ValenceDebug", "STEP 3: Creating GedcomModule instance...");
             GedcomModule gedcomModule = new GedcomModule();
             Log.e("ValenceDebug", "STEP 3: GedcomModule instance created");
@@ -375,7 +377,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "STEP 5: Enabling GedcomModule...");
             moduleManager.enableModule(GEDCOM_MODULE_ID);
             Log.e("ValenceDebug", "STEP 5: GedcomModule enabled");
-            */
             
             Log.e("ValenceDebug", "=========================================");
             Log.e("ValenceDebug", "initModuleSystem() - COMPLETED SUCCESSFULLY!");
@@ -502,7 +503,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     // ====== Fragment Management ======
-
     private void configureAndDisplayGraphFragment(int viewContainerId) {
         Log.e("ValenceDebug", "configureAndDisplayGraphFragment() - START");
         try {
@@ -739,11 +739,17 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     private void drawerMenuNewProject() {
-        mProject.save(this);
-        UmlType.clearProjectUmlTypes();
-        mProject = new UmlProject("NewProject", this);
-        if (mGraphView != null) mGraphView.setUmlProject(mProject);
-        // updateNavigationView();
+        runOnUiThread(() -> {
+            try {
+                mProject.save(this);
+                UmlType.clearProjectUmlTypes();
+                mProject = new UmlProject("NewProject", this);
+                if (mGraphView != null) mGraphView.setUmlProject(mProject);
+            } catch (Exception e) {
+                Log.e("ValenceUI", "Error in new project", e);
+                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void drawerMenuLoadProject() {
