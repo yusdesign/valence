@@ -1,3 +1,5 @@
+<h1>Valence - UML Class Editor & GEDCOM Parser</h1>
+<p>Welcome to Valence, a pure Java UML class diagram editor and GEDCOM 5.5.1 & 7.0.0 parser.</p>
 <p><strong>+CLASS :</strong> create a new class, you are asked to locate the new class by clicking the screen</p>
 <p><strong>ARROWS :</strong> create a relation between two classes, you are asked to select the origin class, then the end class by clicking them</p>
 <p><strong>ESC :</strong> abort current action</p>
