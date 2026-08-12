@@ -92,6 +92,19 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private static long DOUBLE_BACK_PRESSED_DELAY = 2000;
     private OnBackPressedCallback mOnBackPressedCallback;
 
+		// ====== Click Debouncing ======
+		private long mLastClickTime = 0;
+
+		private boolean isClickTooFast() {
+		    long now = System.currentTimeMillis();
+		    if (now - mLastClickTime < 500) {
+		        Log.e("ValenceUI", "Click too fast - ignoring");
+		        return true;
+		    }
+		    mLastClickTime = now;
+		    return false;
+		}
+
     // ====== Fragment Declarations ======
     private GraphFragment mGraphFragment;
     private ClassEditorFragment mClassEditorFragment;
@@ -135,34 +148,48 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     
         try {
             // Set up crash handler
-            Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-                Log.e("ValenceCrash", "!!! UNCAUGHT EXCEPTION !!!", throwable);
-                try {
-                    Toast.makeText(MainActivity.this,
-                            "CRASH: " + throwable.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                } catch (Exception ignored) {}
-            });
+						Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+						    Log.e("ValenceCrash", "!!! UNCAUGHT EXCEPTION !!!", throwable);
+						    runOnUiThread(() -> {
+						        Toast.makeText(this, 
+						            "Error: " + throwable.getMessage(), 
+						            Toast.LENGTH_LONG).show();
+						    });
+						});
     
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
     
             // ====== Set up the drawer ListView ======
             ListView drawerList = findViewById(R.id.drawer_list);
-            String[] menuItems = {"New Project", "Load Project", "Import GEDCOM", "Save As...", "Merge Project", "Delete Project"};
+						String[] menuItems = {
+						    "New Project", 
+						    "Load Project", 
+						    "Import GEDCOM",  // Position 2
+						    "Save As...", 
+						    "Merge Project", 
+						    "Delete Project"
+						};
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
             drawerList.setAdapter(adapter);
     
-            drawerList.setOnItemClickListener((parent, view, position, id) -> {
-                switch (position) {
-                    case 0: drawerMenuNewProject(); break;
-                    case 1: drawerMenuLoadProject(); break;
-                    case 2: drawerMenuSaveAs(); break;
-                    case 3: drawerMenuMerge(); break;
-                    case 4: drawerMenuDeleteProject(); break;
-                }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-            });
+            // In onCreate() - drawerList setup
+						drawerList.setOnItemClickListener((parent, view, position, id) -> {
+						    // Debounce
+						    if (isClickTooFast()) {
+						        return;
+						    }
+						    
+						    switch (position) {
+						        case 0: drawerMenuNewProject(); break;
+						        case 1: drawerMenuLoadProject(); break;
+						        case 2: importGedcomFile(); break;  // GEDCOM vv…
+						        case 3: drawerMenuSaveAs(); break;
+						        case 4: drawerMenuMerge(); break;
+						        case 5: drawerMenuDeleteProject(); break;
+						    }
+						    mDrawerLayout.closeDrawer(GravityCompat.START);
+						});
     
             // ====== Find views ======
             mMainActivityFrame = findViewById(R.id.activity_main_frame);
@@ -396,35 +423,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         }
     }
 
-    /*
-    private void configureNavigationView() {
-        Log.e("ValenceDebug", "configureNavigationView() - START");
-        try {
-            mNavigationView = findViewById(R.id.activity_main_navigation_view);
-            Log.e("ValenceDebug", "mNavigationView = " + (mNavigationView != null));
-            mMenuHeaderProjectNameText = mNavigationView.getHeaderView(0)
-                    .findViewById(R.id.activity_main_navigation_view_header_project_name_text);
-            Log.e("ValenceDebug", "mMenuHeaderProjectNameText = " + (mMenuHeaderProjectNameText != null));
-            updateNavigationView();
-            mNavigationView.setNavigationItemSelectedListener(this);
-            Log.e("ValenceDebug", "configureNavigationView() - COMPLETED");
-        } catch (Exception e) {
-            Log.e("ValenceDebug", "configureNavigationView() - FAILED", e);
-            throw e;
-        }
-    }
-    */
-    /*
-    private void updateNavigationView() {
-        try {
-            if (mMenuHeaderProjectNameText != null && mProject != null) {
-                mMenuHeaderProjectNameText.setText(mProject.getName());
-            }
-        } catch (Exception e) {
-            Log.e("ValenceDebug", "updateNavigationView() - FAILED", e);
-        }
-    }
-    */
     private void savePreferences() {
         try {
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
@@ -714,25 +712,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     // ====== Navigation View Events ======
-    /*
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int menuId = item.getItemId();
-        if (menuId == R.id.drawer_menu_new_project) {
-            drawerMenuNewProject();
-        } else if (menuId == R.id.drawer_menu_load_project) {
-            drawerMenuLoadProject();
-        } else if (menuId == R.id.drawer_menu_save_as) {
-            drawerMenuSaveAs();
-        } else if (menuId == R.id.drawer_menu_merge_project) {
-            drawerMenuMerge();
-        } else if (menuId == R.id.drawer_menu_delete_project) {
-            drawerMenuDeleteProject();
-        }
-        this.mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-    */
+    
     // ====== Navigation View Called Methods ======
 
     private void drawerMenuSaveAs() {
@@ -840,7 +820,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     // ====== Option Menu Events ======
-
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
@@ -976,13 +955,15 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     private void menuHelp() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle("Help")
-                .setMessage(Html.fromHtml(IOUtils.readRawHtmlFile(this, R.raw.help_html)))
-                .setPositiveButton("OK", (dialog, which) -> {})
-                .create()
-                .show();
-    }
+		    runOnUiThread(() -> {
+		        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+		        adb.setTitle("Help")
+		                .setMessage(Html.fromHtml(IOUtils.readRawHtmlFile(this, R.raw.help_html)))
+		                .setPositiveButton("OK", (dialog, which) -> {})
+		                .create()
+		                .show();
+		    });
+		}
 
     // ====== GEDCOM Import ======
 
