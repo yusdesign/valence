@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -14,25 +14,41 @@
         app:titleTextColor="@android:color/white"/>
 
     <androidx.drawerlayout.widget.DrawerLayout
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/activity_main_drawer">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/activity_main_frame"
-                tools:context=".controller.MainActivity">
-            </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/activity_main_frame"
+            tools:context=".controller.MainActivity">
+        </FrameLayout>
 
-        <com.google.android.material.navigation.NavigationView
-            android:layout_width="wrap_content"
+        <!-- Replace NavigationView with a simple ListView -->
+        <LinearLayout
+            android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:id="@+id/activity_main_navigation_view"
-            app:headerLayout="@layout/activity_main_navigation_view_header"
-            app:menu="@menu/activity_main_navigation_view_menu"/>
+            android:orientation="vertical"
+            android:background="@android:color/white">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Valence"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="@color/colorPrimary"
+                android:textColor="@android:color/white" />
+
+            <ListView
+                android:id="@+id/drawer_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>
