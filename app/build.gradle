@@ -25,6 +25,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    
+    // Suppress Kotlin annotation warnings
+    gradle.projectsLoaded {
+        rootProject.allprojects {
+            tasks.withType(JavaCompile) {
+                options.compilerArgs << "-Xlint:-none"
+                options.compilerArgs << "-XDenableSunApiLintControl"
+            }
+        }
+    }
 }
 
 dependencies {
