@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     // private NavigationView mNavigationView;
-    private TextView mMenuHeaderProjectNameText;
+    // private TextView mMenuHeaderProjectNameText;
 
     // ====== Permission Fields ======
     private static boolean sWriteExternalStoragePermission = true;
