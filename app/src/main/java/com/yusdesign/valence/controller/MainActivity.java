@@ -36,7 +36,7 @@ import androidx.core.view.MenuCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.navigation.NavigationView;
+// import com.google.android.material.navigation.NavigationView;
 import com.yusdesign.valence.R;
 import com.yusdesign.valence.model.TypeNameComparator;
 import com.yusdesign.valence.model.UmlClass;
@@ -62,8 +62,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements FragmentObserver,
-        GraphView.GraphViewObserver,
-        NavigationView.OnNavigationItemSelectedListener {
+        GraphView.GraphViewObserver {
+        // "comma" NavigationView.OnNavigationItemSelectedListener {
 
     // ====== STATIC INITIALIZER ======
     static {
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private Purpose mPurpose = FragmentObserver.Purpose.NONE;
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
+    // private NavigationView mNavigationView;
     private TextView mMenuHeaderProjectNameText;
 
     // ====== Permission Fields ======
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         }
     }
     */
-
+    /*
     private void updateNavigationView() {
         try {
             if (mMenuHeaderProjectNameText != null && mProject != null) {
@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             Log.e("ValenceDebug", "updateNavigationView() - FAILED", e);
         }
     }
-
+    */
     private void savePreferences() {
         try {
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
@@ -714,7 +714,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     // ====== Navigation View Events ======
-
+    /*
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int menuId = item.getItemId();
@@ -732,7 +732,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         this.mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    */
     // ====== Navigation View Called Methods ======
 
     private void drawerMenuSaveAs() {
@@ -753,7 +753,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         UmlType.clearProjectUmlTypes();
         mProject = new UmlProject("NewProject", this);
         if (mGraphView != null) mGraphView.setUmlProject(mProject);
-        updateNavigationView();
+        // updateNavigationView();
     }
 
     private void drawerMenuLoadProject() {
@@ -773,7 +773,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
                         UmlType.clearProjectUmlTypes();
                         mProject = UmlProject.load(getApplicationContext(), fileName);
                         if (mGraphView != null) mGraphView.setUmlProject(mProject);
-                        updateNavigationView();
+                        // updateNavigationView();
                     }
                 })
                 .create()
@@ -989,7 +989,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             if (project != null) {
                 mProject = project;
                 if (mGraphView != null) mGraphView.setUmlProject(mProject);
-                updateNavigationView();
+                // updateNavigationView();
                 Toast.makeText(this,
                         "GEDCOM imported successfully!\n" +
                                 "Found " + project.getUmlClasses().size() + " classes",
@@ -1054,7 +1054,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
 
     private void saveAs(String projectName) {
         mProject.setName(projectName);
-        updateNavigationView();
+        // updateNavigationView();
         mProject.save(getApplicationContext());
     }
 
