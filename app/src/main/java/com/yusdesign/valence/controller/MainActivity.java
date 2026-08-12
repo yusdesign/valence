@@ -213,8 +213,14 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     
             // ====== Configure UI components ======
             configureToolbar();
+			// In onCreate(), after configureToolbar()
+			if (getSupportActionBar() != null) {
+			    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			    getSupportActionBar().setHomeButtonEnabled(true);
+			} else {
+			    Log.e("ValenceDebug", "SupportActionBar is NULL!");
+			}
             configureDrawerLayout();
-            // configureNavigationView();  // REMOVED - replaced by ListView
     
             // ====== Configure graph fragment ======
             configureAndDisplayGraphFragment(R.id.activity_main_frame);
@@ -399,17 +405,18 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     // ====== Configuration Methods ======
 
     private void configureToolbar() {
-        Log.e("ValenceDebug", "configureToolbar() - START");
-        try {
-            mToolbar = findViewById(R.id.main_activity_toolbar);
-            Log.e("ValenceDebug", "mToolbar = " + (mToolbar != null));
-            setSupportActionBar(mToolbar);
-            Log.e("ValenceDebug", "configureToolbar() - COMPLETED");
-        } catch (Exception e) {
-            Log.e("ValenceDebug", "configureToolbar() - FAILED", e);
-            throw e;
-        }
-    }
+	    try {
+	        mToolbar = findViewById(R.id.main_activity_toolbar);
+	        if (mToolbar == null) {
+	            Log.e("ValenceDebug", "Toolbar is NULL!");
+	            return;
+	        }
+	        setSupportActionBar(mToolbar);  // This might be failing
+	        Log.e("ValenceDebug", "Toolbar configured");
+	    } catch (Exception e) {
+	        Log.e("ValenceDebug", "configureToolbar() - FAILED", e);
+	    }
+	}
 
     private void configureDrawerLayout() {
 	    Log.e("ValenceDebug", "configureDrawerLayout() - START");
