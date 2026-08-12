@@ -10,4 +10,8 @@
     <string name="values_string">Values</string>
     <string name="parameters_string">Parameters</string>
     <string name="new_parameter_string">New parameter...</string>
+    <string name="menu_import_gedcom">Import GEDCOM</string>
+    <string name="menu_export">Export</string>
+    <string name="menu_import">Import</string>
+
 </resources>
