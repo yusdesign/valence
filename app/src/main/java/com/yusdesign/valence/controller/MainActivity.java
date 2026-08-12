@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
 
+	// ====== UI Thread Handler ======
+    private final Handler mUiHandler = new Handler(Looper.getMainLooper());
+
     // ====== Permission Fields ======
     private static boolean sWriteExternalStoragePermission = true;
     private static boolean sReadExternalStoragePermission = true;
@@ -726,32 +729,50 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     // ====== Navigation View Called Methods ======
 
     private void drawerMenuSaveAs() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final EditText editText = new EditText(this);
-        editText.setText(mProject.getName());
-        builder.setTitle("Save as")
-                .setMessage("Enter new name :")
-                .setView(editText)
-                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
-                .setPositiveButton("OK", (dialogInterface, i) -> saveAs(editText.getText().toString()))
-                .create()
-                .show();
-    }
+	    mUiHandler.post(() -> {
+	        try {
+	            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+	            final EditText editText = new EditText(MainActivity.this);
+	            editText.setText(mProject.getName());
+	            builder.setTitle("Save as")
+	                    .setMessage("Enter new name :")
+	                    .setView(editText)
+	                    .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+	                    .setPositiveButton("OK", (dialogInterface, i) -> {
+	                        String newName = editText.getText().toString();
+	                        if (!newName.isEmpty()) {
+	                            saveAs(newName);
+	                        }
+	                    })
+	                    .create()
+	                    .show();
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Error in save as", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	}
+	
+	private void drawerMenuNewProject() {
+	    // Run on UI thread to avoid threading issues
+	    mUiHandler.post(() -> {
+	        try {
+	            mProject.save(MainActivity.this);
+	            UmlType.clearProjectUmlTypes();
+	            mProject = new UmlProject("NewProject", MainActivity.this);
+	            if (mGraphView != null) {
+	                mGraphView.setUmlProject(mProject);
+	                mGraphView.invalidate();
+	            }
+	            Toast.makeText(MainActivity.this, "New project created", Toast.LENGTH_SHORT).show();
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Error in new project", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	}
 
-    private void drawerMenuNewProject() {
-        runOnUiThread(() -> {
-            try {
-                mProject.save(this);
-                UmlType.clearProjectUmlTypes();
-                mProject = new UmlProject("NewProject", this);
-                if (mGraphView != null) mGraphView.setUmlProject(mProject);
-            } catch (Exception e) {
-                Log.e("ValenceUI", "Error in new project", e);
-                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
+	/*
     private void drawerMenuLoadProject() {
         mProject.save(this);
 
@@ -775,57 +796,108 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
                 .create()
                 .show();
     }
+	*/
+	
+	private void drawerMenuLoadProject() {
+	    mUiHandler.post(() -> {
+	        try {
+	            mProject.save(MainActivity.this);
+	            
+	            final Spinner spinner = new Spinner(MainActivity.this);
+	            spinner.setAdapter(projectDirectoryAdapter());
+	
+	            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+	            builder.setTitle("Load project")
+	                    .setMessage("Choose project to load :")
+	                    .setView(spinner)
+	                    .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+	                    .setPositiveButton("OK", (dialogInterface, i) -> {
+	                        String fileName = spinner.getSelectedItem().toString();
+	                        if (fileName != null) {
+	                            UmlType.clearProjectUmlTypes();
+	                            mProject = UmlProject.load(getApplicationContext(), fileName);
+	                            if (mGraphView != null) {
+	                                mGraphView.setUmlProject(mProject);
+	                                mGraphView.invalidate();
+	                            }
+	                            Toast.makeText(MainActivity.this, "Project loaded", Toast.LENGTH_SHORT).show();
+	                        }
+	                    })
+	                    .create()
+	                    .show();
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Error loading project", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	}
 
     private void drawerMenuDeleteProject() {
-        final Context context = this;
+	    mUiHandler.post(() -> {
+	        try {
+	            final Spinner spinner = new Spinner(MainActivity.this);
+	            spinner.setAdapter(projectDirectoryAdapter());
+	
+	            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+	            builder.setTitle("Delete project")
+	                    .setMessage("Choose project to delete :")
+	                    .setView(spinner)
+	                    .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+	                    .setPositiveButton("OK", (dialogInterface, i) -> {
+	                        String fileName = spinner.getSelectedItem().toString();
+	                        if (fileName != null) {
+	                            File pathName = new File(getFilesDir(), UmlProject.PROJECT_DIRECTORY);
+	                            final File file = new File(pathName, fileName);
+	                            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+	                            alert.setTitle("Delete Project")
+	                                    .setMessage("Are you sure you want to delete " + fileName + " ?")
+	                                    .setNegativeButton("NO", (dialog, which) -> {})
+	                                    .setPositiveButton("YES", (dialog, which) -> {
+	                                        if (file.delete()) {
+	                                            Toast.makeText(MainActivity.this, "Project deleted", Toast.LENGTH_SHORT).show();
+	                                        }
+	                                    })
+	                                    .create()
+	                                    .show();
+	                        }
+	                    })
+	                    .create()
+	                    .show();
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Error deleting project", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	}
 
-        final Spinner spinner = new Spinner(this);
-        spinner.setAdapter(projectDirectoryAdapter());
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete project")
-                .setMessage("Choose project to delete :")
-                .setView(spinner)
-                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
-                .setPositiveButton("OK", (dialogInterface, i) -> {
-                    String fileName = spinner.getSelectedItem().toString();
-                    if (fileName != null) {
-                        File pathName = new File(getFilesDir(), UmlProject.PROJECT_DIRECTORY);
-                        final File file = new File(pathName, fileName);
-                        AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                        alert.setTitle("Delete Project")
-                                .setMessage("Are you sure you want to delete " + fileName + " ?")
-                                .setNegativeButton("NO", (dialog, which) -> {})
-                                .setPositiveButton("YES", (dialog, which) -> file.delete())
-                                .create()
-                                .show();
-                    }
-                })
-                .create()
-                .show();
-    }
-
-    private void drawerMenuMerge() {
-        final Spinner spinner = new Spinner(this);
-        spinner.setAdapter(projectDirectoryAdapter());
-        final Context currentContext = this;
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Merge project")
-                .setMessage("Choose project to merge")
-                .setView(spinner)
-                .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
-                .setPositiveButton("OK", (dialogInterface, i) -> {
-                    String fileName = spinner.getSelectedItem().toString();
-                    if (fileName != null) {
-                        UmlProject project = UmlProject.load(getApplicationContext(), fileName);
-                        mProject.mergeWith(project);
-                        if (mGraphView != null) mGraphView.invalidate();
-                    }
-                })
-                .create()
-                .show();
-    }
+	private void drawerMenuMerge() {
+	    mUiHandler.post(() -> {
+	        try {
+	            final Spinner spinner = new Spinner(MainActivity.this);
+	            spinner.setAdapter(projectDirectoryAdapter());
+	
+	            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+	            builder.setTitle("Merge project")
+	                    .setMessage("Choose project to merge")
+	                    .setView(spinner)
+	                    .setNegativeButton("CANCEL", (dialogInterface, i) -> {})
+	                    .setPositiveButton("OK", (dialogInterface, i) -> {
+	                        String fileName = spinner.getSelectedItem().toString();
+	                        if (fileName != null) {
+	                            UmlProject project = UmlProject.load(getApplicationContext(), fileName);
+	                            mProject.mergeWith(project);
+	                            if (mGraphView != null) mGraphView.invalidate();
+	                            Toast.makeText(MainActivity.this, "Project merged", Toast.LENGTH_SHORT).show();
+	                        }
+	                    })
+	                    .create()
+	                    .show();
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Error merging project", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	}
 
     private ArrayAdapter<String> projectDirectoryAdapter() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
@@ -983,46 +1055,68 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
 
     // ====== GEDCOM Import ======
 
-    private void importGedcomFile() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"text/plain", "application/gedcom"});
-        startActivityForResult(intent, INTENT_IMPORT_GEDCOM);
-    }
+	private void importGedcomFile() {
+	    mUiHandler.post(() -> {
+	        try {
+	            if (moduleManager == null) {
+	                Toast.makeText(MainActivity.this, "Module system not initialized", Toast.LENGTH_SHORT).show();
+	                return;
+	            }
+	            
+	            // Check if GEDCOM provider exists
+	            UmlModule.UmlDataProvider provider = moduleManager.getFileHandler(".ged");
+	            if (provider == null) {
+	                Toast.makeText(MainActivity.this, "GEDCOM module not available", Toast.LENGTH_SHORT).show();
+	                return;
+	            }
+	            
+	            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+	            intent.setType("*/*");
+	            intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"text/plain", "application/gedcom"});
+	            startActivityForResult(intent, INTENT_IMPORT_GEDCOM);
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Failed to open file picker", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+	        }
+	    });
+	}
 
-    private void processGedcomFile(Uri fileUri) {
-        if (moduleManager == null) {
-            Toast.makeText(this, "Module system not initialized", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        UmlModule.UmlDataProvider provider = moduleManager.getFileHandler(".ged");
-        if (provider == null) {
-            Toast.makeText(this, "GEDCOM module not available", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        try {
-            UmlProject project = provider.loadData(this, fileUri);
-            if (project != null) {
-                mProject = project;
-                if (mGraphView != null) mGraphView.setUmlProject(mProject);
-                // updateNavigationView();
-                Toast.makeText(this,
-                        "GEDCOM imported successfully!\n" +
-                                "Found " + project.getUmlClasses().size() + " classes",
-                        Toast.LENGTH_LONG).show();
-                Log.i("GEDCOM", "Imported project with " +
-                        project.getUmlClasses().size() + " classes and " +
-                        project.getUmlRelations().size() + " relations");
-            } else {
-                Toast.makeText(this, "Failed to parse GEDCOM file", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            Log.e("GEDCOM", "Error processing GEDCOM file", e);
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
+	private void processGedcomFile(Uri fileUri) {
+	    // This is called from onActivityResult, which is already on UI thread
+	    // But we use Handler to be safe
+	    mUiHandler.post(() -> {
+	        try {
+	            if (moduleManager == null) {
+	                Toast.makeText(MainActivity.this, "Module system not initialized", Toast.LENGTH_SHORT).show();
+	                return;
+	            }
+	
+	            UmlModule.UmlDataProvider provider = moduleManager.getFileHandler(".ged");
+	            if (provider == null) {
+	                Toast.makeText(MainActivity.this, "GEDCOM module not available", Toast.LENGTH_SHORT).show();
+	                return;
+	            }
+	
+	            UmlProject project = provider.loadData(MainActivity.this, fileUri);
+	            if (project != null) {
+	                mProject = project;
+	                if (mGraphView != null) {
+	                    mGraphView.setUmlProject(mProject);
+	                    mGraphView.invalidate();
+	                }
+	                Toast.makeText(MainActivity.this,
+	                        "GEDCOM imported successfully!\n" +
+	                        "Found " + project.getUmlClasses().size() + " classes",
+	                        Toast.LENGTH_LONG).show();
+	            } else {
+	                Toast.makeText(MainActivity.this, "Failed to parse GEDCOM file", Toast.LENGTH_SHORT).show();
+	            }
+	        } catch (Exception e) {
+	            Log.e("GEDCOM", "Error processing GEDCOM file", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+	        }
+	    });
+	}
 
     // ====== Intents ======
 
@@ -1071,10 +1165,18 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     // ====== Project Management Methods ======
 
     private void saveAs(String projectName) {
-        mProject.setName(projectName);
-        // updateNavigationView();
-        mProject.save(getApplicationContext());
-    }
+	    mUiHandler.post(() -> {
+	        try {
+	            mProject.setName(projectName);
+	            mProject.save(getApplicationContext());
+	            if (mGraphView != null) mGraphView.invalidate();
+	            Toast.makeText(MainActivity.this, "Project saved as: " + projectName, Toast.LENGTH_SHORT).show();
+	        } catch (Exception e) {
+	            Log.e("ValenceUI", "Error saving project", e);
+	            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	}
 
     // ====== Check Permissions ======
 
