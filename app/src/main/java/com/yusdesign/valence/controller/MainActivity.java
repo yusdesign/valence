@@ -406,22 +406,32 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
     }
 
     private void configureDrawerLayout() {
-        Log.e("ValenceDebug", "configureDrawerLayout() - START");
-        try {
-            mDrawerLayout = findViewById(R.id.activity_main_drawer);
-            Log.e("ValenceDebug", "mDrawerLayout = " + (mDrawerLayout != null));
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, mDrawerLayout, mToolbar,
-                    R.string.navigation_drawer_open,
-                    R.string.navigation_drawer_close);
-            mDrawerLayout.addDrawerListener(toggle);
-            toggle.syncState();
-            Log.e("ValenceDebug", "configureDrawerLayout() - COMPLETED");
-        } catch (Exception e) {
-            Log.e("ValenceDebug", "configureDrawerLayout() - FAILED", e);
-            throw e;
-        }
-    }
+	    Log.e("ValenceDebug", "configureDrawerLayout() - START");
+	    try {
+	        mDrawerLayout = findViewById(R.id.activity_main_drawer);
+	        if (mDrawerLayout == null) {
+	            Log.e("ValenceDebug", "DrawerLayout is NULL!");
+	            return;
+	        }
+	        
+	        // Create the toggle with the toolbar
+	        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+	                this, 
+	                mDrawerLayout, 
+	                mToolbar,  // Must be the same toolbar used with setSupportActionBar
+	                R.string.navigation_drawer_open, 
+	                R.string.navigation_drawer_close
+	        );
+	        
+	        // Add listener and sync
+	        mDrawerLayout.addDrawerListener(toggle);
+	        toggle.syncState();  // THIS IS CRITICAL - it syncs the hamburger icon
+	        
+	        Log.e("ValenceDebug", "configureDrawerLayout() - COMPLETED");
+	    } catch (Exception e) {
+	        Log.e("ValenceDebug", "configureDrawerLayout() - FAILED", e);
+	    }
+	}
 
     private void savePreferences() {
         try {
