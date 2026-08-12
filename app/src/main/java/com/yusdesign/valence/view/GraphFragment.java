@@ -134,8 +134,20 @@ public class GraphFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_graph, container, false);
+        View view = inflater.inflate(R.layout.fragment_graph, container, false);
+        
+        // Prevent focus stealing
+        view.setFocusableInTouchMode(false);
+        view.setFocusable(false);
+        
+        // Let the parent activity handle focus
+        if (container != null) {
+            container.setFocusableInTouchMode(true);
+            container.setFocusable(true);
+            container.requestFocus();
+        }
+        
+        return view;
     }
 
     @Override
