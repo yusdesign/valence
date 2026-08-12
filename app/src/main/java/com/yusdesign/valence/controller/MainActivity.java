@@ -131,40 +131,28 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("ValenceDebug", "=========================================");
         Log.e("ValenceDebug", "onCreate() - START");
-        Log.e("ValenceDebug", "=========================================");
-
+    
         try {
-            // ====== STEP 1: Set up global crash handler ======
-            Log.e("ValenceDebug", "STEP 1: Setting up crash handler...");
+            // Set up crash handler
             Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
                 Log.e("ValenceCrash", "!!! UNCAUGHT EXCEPTION !!!", throwable);
                 try {
                     Toast.makeText(MainActivity.this,
                             "CRASH: " + throwable.getMessage(),
                             Toast.LENGTH_LONG).show();
-                } catch (Exception ignored) {
-                    // Can't show toast
-                }
+                } catch (Exception ignored) {}
             });
-            Log.e("ValenceDebug", "STEP 1: Crash handler set");
-
-            // ====== STEP 2: Super and setContentView ======
-            Log.e("ValenceDebug", "STEP 2: Calling super.onCreate()...");
+    
             super.onCreate(savedInstanceState);
-            Log.e("ValenceDebug", "STEP 2: super.onCreate() done");
-
-            Log.e("ValenceDebug", "STEP 2: Calling setContentView()...");
             setContentView(R.layout.activity_main);
-            Log.e("ValenceDebug", "STEP 2: setContentView() done");
-
-            // List View Drawer
+    
+            // ====== Set up the drawer ListView ======
             ListView drawerList = findViewById(R.id.drawer_list);
-            String[] menuItems = {"New Project", "Load Project", "Save As...", "Merge Project", "Delete Project"};
+            String[] menuItems = {"New Project", "Load Project", "Import GEDCOM", "Save As...", "Merge Project", "Delete Project"};
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
             drawerList.setAdapter(adapter);
-            
+    
             drawerList.setOnItemClickListener((parent, view, position, id) -> {
                 switch (position) {
                     case 0: drawerMenuNewProject(); break;
@@ -175,68 +163,43 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
                 }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             });
-
-            // ====== STEP 3: Find views ======
-            Log.e("ValenceDebug", "STEP 3: Finding views...");
+    
+            // ====== Find views ======
             mMainActivityFrame = findViewById(R.id.activity_main_frame);
-            Log.e("ValenceDebug", "STEP 3: mMainActivityFrame = " + (mMainActivityFrame != null));
-            Log.e("ValenceDebug", "STEP 3: Views found");
-
-            // ====== STEP 4: Initialize UmlType ======
-            Log.e("ValenceDebug", "STEP 4: Initializing UmlType...");
+            mDrawerLayout = findViewById(R.id.activity_main_drawer);
+    
+            // ====== Initialize UmlType ======
             UmlType.clearUmlTypes();
-            Log.e("ValenceDebug", "STEP 4: UmlTypes cleared");
             UmlType.initializePrimitiveUmlTypes(this);
-            Log.e("ValenceDebug", "STEP 4: Primitive UmlTypes initialized");
             UmlType.initializeCustomUmlTypes(this);
-            Log.e("ValenceDebug", "STEP 4: Custom UmlTypes initialized");
-
-            // ====== STEP 5: Get preferences ======
-            Log.e("ValenceDebug", "STEP 5: Getting preferences...");
+    
+            // ====== Get preferences ======
             getPreferences();
-            Log.e("ValenceDebug", "STEP 5: Preferences loaded");
-
-            // ====== STEP 6: Configure UI components ======
-            Log.e("ValenceDebug", "STEP 6: Configuring UI components...");
+    
+            // ====== Configure UI components ======
             configureToolbar();
-            Log.e("ValenceDebug", "STEP 6: Toolbar configured");
             configureDrawerLayout();
-            Log.e("ValenceDebug", "STEP 6: Drawer configured");
-            configureNavigationView();
-            Log.e("ValenceDebug", "STEP 6: Navigation configured");
-
-            // ====== STEP 7: Configure graph fragment ======
-            Log.e("ValenceDebug", "STEP 7: Configuring graph fragment...");
+            // configureNavigationView();  // REMOVED - replaced by ListView
+    
+            // ====== Configure graph fragment ======
             configureAndDisplayGraphFragment(R.id.activity_main_frame);
-            Log.e("ValenceDebug", "STEP 7: Graph fragment configured");
-
-            // ====== STEP 8: Initialize module system ======
-            Log.e("ValenceDebug", "STEP 8: Initializing module system...");
+    
+            // ====== Initialize module system ======
             initModuleSystem();
-            Log.e("ValenceDebug", "STEP 8: Module system initialized");
-
-            // ====== STEP 9: Set up back callback ======
-            Log.e("ValenceDebug", "STEP 9: Setting up back callback...");
+    
+            // ====== Set up back callback ======
             createOnBackPressedCallback();
             setOnBackPressedCallback();
-            Log.e("ValenceDebug", "STEP 9: Back callback set");
-
-            // ====== STEP 10: Request permissions ======
-            Log.e("ValenceDebug", "STEP 10: Requesting permissions...");
+    
+            // ====== Request permissions ======
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 checkPermissions();
             }
-            Log.e("ValenceDebug", "STEP 10: Permissions requested");
-
-            Log.e("ValenceDebug", "=========================================");
+    
             Log.e("ValenceDebug", "onCreate() - COMPLETED SUCCESSFULLY!");
-            Log.e("ValenceDebug", "=========================================");
-
+    
         } catch (Exception e) {
-            Log.e("ValenceDebug", "=========================================");
-            Log.e("ValenceDebug", "onCreate() - FAILED!");
-            Log.e("ValenceDebug", "=========================================");
-            Log.e("ValenceDebug", "Exception: " + e.getMessage(), e);
+            Log.e("ValenceDebug", "onCreate() - FAILED!", e);
             Toast.makeText(this, "CRASH: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
@@ -433,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
         }
     }
 
+    /*
     private void configureNavigationView() {
         Log.e("ValenceDebug", "configureNavigationView() - START");
         try {
@@ -449,6 +413,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObserver,
             throw e;
         }
     }
+    */
 
     private void updateNavigationView() {
         try {
